@@ -123,16 +123,16 @@ def main():
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Schools", len(filtered_df))
+            st.metric("Schools are in your district", len(filtered_df))
         with col2:
-            st.metric("Total Capital Needs", format_currency(totals['Total Capital Needs']))
+            st.metric("Total capital needs", format_currency(totals['Total Capital Needs']))
         with col3:
-            st.metric("Total Budget FY25", format_currency(totals['Operational Budget FY25']))
+            st.metric("Possible budget cuts", format_currency(totals['Operations 15% Cut']))
         with col4:
-            st.metric("Total Positions", format_positions(totals['Positions']))
+            st.metric("Possible loss in positions", format_positions(totals['Positions']))
     
     # Display table
-    st.subheader("📋 School Data")
+    st.subheader("📋 School Level Data")
     
     if len(filtered_df) > 0:
         # Highlight totals row
