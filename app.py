@@ -14,7 +14,7 @@ st.set_page_config(
 def load_data():
     """Load the CPS budget stakes dataset"""
     try:
-        df = pd.read_csv(r"C:\Users\christopherpoulos\work\projects\cps_budget_stakes_202506\web_app\cps_budget_stakes_dataset_stacked_2025-06-23.csv")
+        df = pd.read_csv(r"cps_budget_stakes_dataset_stacked_2025-06-23.csv")
         return df
     except FileNotFoundError:
         st.error("Data file not found. Please ensure the CSV file is in the correct location.")
