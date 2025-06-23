@@ -129,7 +129,7 @@ def main():
         with col3:
             st.metric("Possible budget cuts", format_currency(totals['Operations 15% Cut']))
         with col4:
-            st.metric("Possible loss in positions", format_positions(totals['Positions']))
+            st.metric("Possible loss in positions", format_positions(totals['Positions 15% Cut']))
     
     # Display table
     st.subheader("📋 School Level Data")
