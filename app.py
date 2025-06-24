@@ -23,7 +23,7 @@ def load_data():
 # Main app
 def main():
     st.title("🏫 CPS Budget Stakes Dashboard")
-    st.markdown("**Filter schools by legislative district to view capital needs and budget impact**")
+    st.markdown("**Filter schools by legislative district to view capital needs and the impact of budget cuts**")
     
     # Load data
     df = load_data()
@@ -85,19 +85,25 @@ def main():
     # Create display dataframe
     display_df = filtered_df[display_columns].copy()
     
-    # Calculate totals
-    numeric_columns = [col for col in display_columns if col != 'School Name']
-    totals = {}
-    totals['School Name'] = 'TOTAL'
+    display_df.columns = [
+        'School Name',
+        'Immediate (within 5 years)',
+        'Total Capital Needs', 
+        'FY25 Budget',
+        'Budget Cut (7%)',
+        'Budget Cut (15%)',
+        'Total Positions',
+        'Position Loss (7%)',
+        'Position Loss (15%)',
+        'SPED Positions',
+        'SPED Loss (7%)',
+        'SPED Loss (15%)'
+    ]
     
-    for col in numeric_columns:
-        totals[col] = display_df[col].sum()
+        # Create tabs after filtering data
+    tab1, tab2 = st.tabs(["💰 Capital Needs", "🏢 Operations & Positions"])
     
-    # Add totals row
-    totals_df = pd.DataFrame([totals])
-    final_df = pd.concat([display_df, totals_df], ignore_index=True)
-    
-    # Format currency and numbers
+    # Format currency and numbers functions
     def format_currency(val):
         if pd.isna(val):
             return ""
@@ -108,64 +114,165 @@ def main():
             return ""
         return f"{val:.1f}"
     
-    # Apply formatting
-    currency_cols = ['Immediate Capital Needs', 'Total Capital Needs', 'Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut']
-    position_cols = ['Positions', 'Positions 7% Cut', 'Positions 15% Cut', 'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']
-    
-    formatted_df = final_df.copy()
-    for col in currency_cols:
-        formatted_df[col] = formatted_df[col].apply(format_currency)
-    for col in position_cols:
-        formatted_df[col] = formatted_df[col].apply(format_positions)
-    
-    # Display metrics
-    if len(filtered_df) > 0:
-        col1, col2, col3, col4 = st.columns(4)
+    with tab1:
+        st.subheader("Capital Needs by School")
         
-        with col1:
-            st.metric("Schools are in your district", len(filtered_df))
-        with col2:
-            st.metric("Total capital needs", format_currency(totals['Total Capital Needs']))
-        with col3:
-            st.metric("Possible budget cuts", format_currency(totals['Operations 15% Cut']))
-        with col4:
-            st.metric("Possible loss in positions", format_positions(totals['Positions 15% Cut']))
-    
-    # Display table
-    st.subheader("📋 School Level Data")
-    
-    if len(filtered_df) > 0:
-        # Highlight totals row
-        def highlight_totals(row):
-            if row.name == len(formatted_df) - 1:  # Last row (totals)
+        # Define capital columns
+        capital_columns = [
+            'School Name',
+            'Immediate Capital Needs',
+            'Total Capital Needs'
+        ]
+        
+        # Create capital display dataframe
+        capital_df = filtered_df[capital_columns].copy()
+        
+        # Rename columns for display
+        capital_df.columns = [
+            "School Name",
+            "Immediate (within 5 years)",
+            "Total Capital Needs"
+        ]
+        
+        # Calculate totals for capital
+        capital_totals = {}
+        capital_totals['School Name'] = 'TOTAL'
+        capital_totals['Immediate (within 5 years)'] = capital_df['Immediate (within 5 years)'].sum()
+        capital_totals['Total Capital Needs'] = capital_df['Total Capital Needs'].sum()
+        
+        # Add totals row
+        capital_totals_df = pd.DataFrame([capital_totals])
+        capital_final_df = pd.concat([capital_df, capital_totals_df], ignore_index=True)
+        
+        # Format currency
+        for col in ['Immediate (within 5 years)', 'Total Capital Needs']:
+            capital_final_df[col] = capital_final_df[col].apply(format_currency)
+        
+        # Display capital metrics
+        if len(filtered_df) > 0:
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Schools", len(filtered_df))
+            with col2:
+                st.metric("Immediate Capital Needs", format_currency(capital_totals['Immediate (within 5 years)']))
+            with col3:
+                st.metric("Total Capital Needs", format_currency(capital_totals['Total Capital Needs']))
+        
+        # Display capital table
+        def highlight_totals_capital(row):
+            if row.name == len(capital_final_df) - 1:  # Last row (totals)
                 return ['background-color: #f0f0f0; font-weight: bold'] * len(row)
             else:
                 return [''] * len(row)
         
-        styled_df = formatted_df.style.apply(highlight_totals, axis=1)
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
-        
-        # Download button
-        st.subheader("💾 Download Data")
-        
-        # Prepare download data (unformatted for CSV)
-        download_df = final_df.copy()
-        
-        csv = download_df.to_csv(index=False)
-        
-        filename = f"cps_budget_data_{selected_chamber.replace(' ', '_')}_{selected_district}.csv" if filter_type == "Chamber & District" else f"cps_budget_data_{selected_legislator.replace(' ', '_').replace('.', '')}.csv"
-        
-        st.download_button(
-            label="📥 Download as CSV",
-            data=csv,
-            file_name=filename,
-            mime="text/csv"
-        )
-        
-    else:
-        st.warning("No schools found for the selected criteria.")
+        if len(filtered_df) > 0:
+            styled_capital_df = capital_final_df.style.apply(highlight_totals_capital, axis=1)
+            st.dataframe(styled_capital_df, use_container_width=True, hide_index=True)
+            
+            # Download capital data
+            capital_csv = capital_final_df.to_csv(index=False)
+            filename_capital = f"capital_needs_{selected_chamber.replace(' ', '_')}_{selected_district}.csv" if filter_type == "Chamber & District" else f"capital_needs_{selected_legislator.replace(' ', '_').replace('.', '')}.csv"
+            st.download_button(
+                label="📥 Download Capital Data as CSV",
+                data=capital_csv,
+                file_name=filename_capital,
+                mime="text/csv"
+            )
+        else:
+            st.warning("No schools found for the selected criteria.")
     
-    # Additional info
+    with tab2:
+        st.subheader("Operations & Positions by School")
+        
+        # Define operations columns
+        operations_columns = [
+            'School Name',
+            'Operational Budget FY25',
+            'Operations 7% Cut',
+            'Operations 15% Cut',
+            'Positions',
+            'Positions 7% Cut',
+            'Positions 15% Cut',
+            'SPED Positions',
+            'SPED Positions 7% Cut',
+            'SPED Positions 15% Cut'
+        ]
+        
+        # Create operations display dataframe
+        operations_df = filtered_df[operations_columns].copy()
+        
+        # Rename columns for display
+        operations_df.columns = [
+            "School Name",
+            "FY25 Budget",
+            "Budget Cut (7%)",
+            "Budget Cut (15%)",
+            "Total Positions",
+            "Position Loss (7%)",
+            "Position Loss (15%)",
+            "SPED Positions",
+            "SPED Loss (7%)",
+            "SPED Loss (15%)"
+        ]
+        
+        # Calculate totals for operations
+        operations_numeric_columns = [col for col in operations_df.columns if col != 'School Name']
+        operations_totals = {}
+        operations_totals['School Name'] = 'TOTAL'
+        
+        for col in operations_numeric_columns:
+            operations_totals[col] = operations_df[col].sum()
+        
+        # Add totals row
+        operations_totals_df = pd.DataFrame([operations_totals])
+        operations_final_df = pd.concat([operations_df, operations_totals_df], ignore_index=True)
+        
+        # Format currency and positions
+        currency_cols = ['FY25 Budget', 'Budget Cut (7%)', 'Budget Cut (15%)']
+        position_cols = ['Total Positions', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Positions', 'SPED Loss (7%)', 'SPED Loss (15%)']
+        
+        formatted_operations_df = operations_final_df.copy()
+        for col in currency_cols:
+            formatted_operations_df[col] = formatted_operations_df[col].apply(format_currency)
+        for col in position_cols:
+            formatted_operations_df[col] = formatted_operations_df[col].apply(format_positions)
+        
+        # Display operations metrics
+        if len(filtered_df) > 0:
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Schools", len(filtered_df))
+            with col2:
+                st.metric("Total Budget FY25", format_currency(operations_totals['FY25 Budget']))
+            with col3:
+                st.metric("Total Positions", format_positions(operations_totals['Total Positions']))
+            with col4:
+                st.metric("SPED Positions", format_positions(operations_totals['SPED Positions']))
+        
+        # Display operations table
+        def highlight_totals_operations(row):
+            if row.name == len(formatted_operations_df) - 1:  # Last row (totals)
+                return ['background-color: #f0f0f0; font-weight: bold'] * len(row)
+            else:
+                return [''] * len(row)
+        
+        if len(filtered_df) > 0:
+            styled_operations_df = formatted_operations_df.style.apply(highlight_totals_operations, axis=1)
+            st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
+            
+            # Download operations data
+            operations_csv = operations_final_df.to_csv(index=False)
+            filename_operations = f"operations_data_{selected_chamber.replace(' ', '_')}_{selected_district}.csv" if filter_type == "Chamber & District" else f"operations_data_{selected_legislator.replace(' ', '_').replace('.', '')}.csv"
+            st.download_button(
+                label="📥 Download Operations Data as CSV",
+                data=operations_csv,
+                file_name=filename_operations,
+                mime="text/csv"
+            )
+        else:
+            st.warning("No schools found for the selected criteria.")
+    
+    # Additional info (keep this)
     st.sidebar.markdown("---")
     st.sidebar.markdown("**Data Info:**")
     st.sidebar.markdown(f"• Total Schools: {len(df)}")
