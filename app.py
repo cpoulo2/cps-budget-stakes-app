@@ -156,7 +156,7 @@ def main():
         color: black !important;
     }
     
-    /* AGGRESSIVE WHITE SPACE FIXES */
+    /* TARGET MAIN CONTENT AREA SPECIFICALLY */
     .main .block-container {
         padding-left: 1rem !important;
         padding-right: 1rem !important;
@@ -164,35 +164,17 @@ def main():
         width: 100% !important;
     }
     
-    /* Target the main content area specifically */
-    .stApp > div:first-child > div:first-child > div:first-child {
-        padding-left: 1rem !important;
-    }
-    
-    /* Remove all default margins and padding */
-    section.main > div {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+    /* Use stMain to target main content */
+    .stMain .block-container {
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
         max-width: none !important;
     }
     
     /* Force main content to use full width */
-    .element-container {
+    .stMain {
         width: 100% !important;
         max-width: none !important;
-    }
-    
-    /* Fix the content wrapper */
-    .css-1d391kg, .css-1v0mbdj, .e1tzin5v2 {
-        width: 100% !important;
-        max-width: none !important;
-        padding-left: 1rem !important;
-    }
-    
-    /* Remove margin from app container */
-    .stApp > div:first-child {
-        margin: 0 !important;
-        padding: 0 !important;
     }
     
     /* Ensure tables use full width */
@@ -200,18 +182,6 @@ def main():
         padding-left: 0 !important;
         padding-right: 0 !important;
         width: 100% !important;
-    }
-    
-    /* Fix any remaining margin issues */
-    .stMarkdown {
-        width: 100% !important;
-    }
-    
-    /* NEW: Fix the main content container padding */
-    [data-testid="stAppViewContainer"] > .main > div {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-        max-width: none !important;
     }
     
     /* Force all text to be black */
