@@ -42,7 +42,7 @@ def create_html_download(table, title):
     return full_html.encode('utf-8')
     
 def create_formatted_tables(df_filtered, district_name):
-    """Create formatted GT tables for PDF export"""
+    """Create formatted GT tables for HTML export"""
     
     # Prepare operations data
     df_operations = df_filtered[['School Name', 
@@ -61,6 +61,25 @@ def create_formatted_tables(df_filtered, district_name):
                              'Immediate Capital Needs',
                              'Total Capital Needs']].copy()
     df_capital.columns = ['School Name', 'Immediate (within 5 years)', 'Total']
+    
+    # ADD DISTRICT TOTALS ROW TO OPERATIONS
+    operations_totals = {}
+    operations_totals['School Name'] = f'{district_name} TOTAL'
+    operations_numeric_cols = [col for col in df_operations.columns if col != 'School Name']
+    for col in operations_numeric_cols:
+        operations_totals[col] = df_operations[col].sum()
+    
+    operations_totals_df = pd.DataFrame([operations_totals])
+    df_operations = pd.concat([df_operations, operations_totals_df], ignore_index=True)
+    
+    # ADD DISTRICT TOTALS ROW TO CAPITAL
+    capital_totals = {}
+    capital_totals['School Name'] = f'{district_name} TOTAL'
+    capital_totals['Immediate (within 5 years)'] = df_capital['Immediate (within 5 years)'].sum()
+    capital_totals['Total'] = df_capital['Total'].sum()
+    
+    capital_totals_df = pd.DataFrame([capital_totals])
+    df_capital = pd.concat([df_capital, capital_totals_df], ignore_index=True)
     
     # Convert to polars
     df_operations_pl = pl.from_pandas(df_operations)
@@ -372,8 +391,8 @@ def main():
                         )
                         st.success("✅ Capital report ready for download! (You can print to PDF from your browser)")
                     except Exception as e:
-                        st.error(f"Error generating report: {str(e)}")
-    else:
+                        st.error(f"Error generating report: {str(e
+                                 )}")
         st.info("Select a district or legislator to enable downloads.")
     
     st.markdown("---")
