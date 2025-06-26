@@ -166,8 +166,66 @@ def main():
                 return [''] * len(row)
         
         if len(filtered_df) > 0:
-            styled_capital_df = capital_final_df.style.apply(highlight_totals_capital, axis=1)
-            st.dataframe(styled_capital_df, use_container_width=True, hide_index=True)
+            # Create custom HTML table for full control over styling
+            def create_html_table(df):
+                cap_columns = ['Immediate (within 5 years)', 'Total Capital Needs']
+                
+                html = """
+                <style>
+                .custom-table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    font-family: 'Source Sans Pro', sans-serif;
+                    font-size: 14px;
+                }
+                .custom-table th {
+                    background-color: white !important;
+                    font-weight: bold !important;
+                    text-align: center !important;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    color: black !important;
+                }
+                .custom-table td {
+                    padding: 8px 10px;
+                    border: 1px solid #ddd;
+                    text-align: center;
+                }
+                .custom-table td:first-child {
+                    text-align: left;
+                }
+                .custom-table tr:last-child {
+                    background-color: #f0f0f0;
+                    font-weight: bold;
+                }
+                .cut-column {
+                    color: red !important;
+                    font-weight: bold;
+                }
+                </style>
+                <table class="custom-table">
+                <thead><tr>
+                """
+                
+                # Add headers
+                for col in df.columns:
+                    html += f"<th>{col}</th>"
+                html += "</tr></thead><tbody>"
+                
+                # Add data rows
+                for idx, row in df.iterrows():
+                    html += "<tr>"
+                    for col in df.columns:
+                        value = row[col]
+                        css_class = "cut-column" if col in cap_columns else ""
+                        html += f'<td class="{css_class}">{value}</td>'
+                    html += "</tr>"
+                
+                html += "</tbody></table>"
+                return html
+            
+            # Display custom HTML table
+            st.markdown(create_html_table(formatted_operations_df), unsafe_allow_html=True)
             
             # Download capital data
             capital_csv = capital_final_df.to_csv(index=False)
