@@ -270,7 +270,7 @@ def main():
             return styles
         
         if len(filtered_df) > 0:
-            styled_operations_df = formatted_operations_df.style.apply(highlight_totals_operations, axis=1)
+            styled_operations_df = formatted_operations_df.style.apply(formatted_operations_df, axis=1)
             st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
             
             # Download operations data
