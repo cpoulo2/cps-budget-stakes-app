@@ -250,27 +250,32 @@ def main():
                 st.metric("SPED Positions", format_positions(operations_totals['SPED Positions']))
         
         # Enhanced styling function with red cuts
-        def highlight_operations_table(row):
-            styles = [''] * len(row)
-            
-            # Highlight totals row
-            if row.name == len(formatted_operations_df) - 1:
-                styles = ['background-color: #f0f0f0; font-weight: bold'] * len(row)
-            
-            # Make cut columns red (override totals styling for these columns)
+        def style_operations_dataframe(df):
+            # Define cut columns that should be red
             cut_columns = ['Budget Cut (7%)', 'Budget Cut (15%)', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Loss (7%)', 'SPED Loss (15%)']
             
-            for i, col_name in enumerate(formatted_operations_df.columns):
-                if col_name in cut_columns:
-                    if row.name == len(formatted_operations_df) - 1:  # Totals row
-                        styles[i] = 'background-color: #f0f0f0; font-weight: bold; color: red'
-                    else:  # Regular rows
-                        styles[i] = 'color: red'
+            # Create styler object
+            styler = df.style
             
-            return styles
+            # Highlight totals row
+            styler = styler.apply(
+                lambda row: ['background-color: #f0f0f0; font-weight: bold'] * len(row) 
+                if row.name == len(df) - 1 else [''] * len(row),
+                axis=1
+            )
+            
+            # Make cut columns red
+            for col in cut_columns:
+                if col in df.columns:
+                    styler = styler.applymap(
+                        lambda x: 'color: red',
+                        subset=[col]
+                    )
+            
+            return styler
         
         if len(filtered_df) > 0:
-            styled_operations_df = formatted_operations_df.style.apply(formatted_operations_df, axis=1)
+            styled_operations_df = style_operations_dataframe(formatted_operations_df, axis=1)
             st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
             
             # Download operations data
