@@ -31,6 +31,26 @@ def main():
         color: black !important;
     }
     
+    /* Fix tab labels specifically */
+    .stTabs [data-baseweb="tab-list"] button {
+        color: black !important;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: black !important;
+        font-weight: bold !important;
+    }
+    
+    /* Fix subheaders in tabs */
+    .stTabs [data-baseweb="tab-panel"] h3 {
+        color: black !important;
+    }
+    
+    /* Force all headers to be black */
+    h1, h2, h3, h4, h5, h6 {
+        color: black !important;
+    }
+    
     /* Ensure sidebar is also light */
     .css-1d391kg {
         background-color: #f0f2f6 !important;
