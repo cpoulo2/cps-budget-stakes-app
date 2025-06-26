@@ -19,6 +19,7 @@ def main():
     st.markdown("**Filter schools by legislative district to view capital needs and the impact of budget cuts**")
     
     # Force light mode
+    # Force light mode
     st.markdown("""
     <style>
     .stApp {
@@ -48,6 +49,32 @@ def main():
     
     /* Force all headers to be black */
     h1, h2, h3, h4, h5, h6 {
+        color: black !important;
+    }
+    
+    /* Fix metric labels and values */
+    .stMetric > div > div {
+        color: black !important;
+    }
+    
+    .stMetric label {
+        color: black !important;
+    }
+    
+    .stMetric > div > div > div {
+        color: black !important;
+    }
+    
+    /* Fix all metric text */
+    [data-testid="metric-container"] {
+        color: black !important;
+    }
+    
+    [data-testid="metric-container"] > div {
+        color: black !important;
+    }
+    
+    [data-testid="metric-container"] label {
         color: black !important;
     }
     
