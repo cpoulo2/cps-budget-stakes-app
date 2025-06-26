@@ -158,34 +158,41 @@ def main():
     
     /* AGGRESSIVE WHITE SPACE FIXES */
     .main .block-container {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
         max-width: none !important;
         width: 100% !important;
     }
     
     /* Target the main content area specifically */
     .stApp > div:first-child > div:first-child > div:first-child {
-        padding-left: 1rem !important;
+        padding-left: 0rem !important;
     }
     
     /* Remove all default margins and padding */
     section.main > div {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
         max-width: none !important;
     }
     
     /* Force main content to use full width */
     .element-container {
         width: 100% !important;
+        max-width: none !important;
     }
     
     /* Fix the content wrapper */
     .css-1d391kg, .css-1v0mbdj, .e1tzin5v2 {
         width: 100% !important;
         max-width: none !important;
-        padding-left: 1rem !important;
+        padding-left: 0rem !important;
+    }
+    
+    /* Remove margin from app container */
+    .stApp > div:first-child {
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
     /* Ensure tables use full width */
@@ -619,17 +626,13 @@ def main():
         for col in position_cols:
             formatted_operations_df[col] = formatted_operations_df[col].apply(format_positions)
         
-        # Display operations metrics
+        # Display operations metrics with better spacing
         if len(filtered_df) > 0:
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("Schools", len(filtered_df))
-            with col2:
-                st.metric("Total possible budget cuts", format_currency(operations_totals['Budget Cut (15%)']))
-            with col3:
-                st.metric("Loss of positions", format_positions(operations_totals['Position Loss (15%)']))
-            with col4:
-                st.metric("Loss of SPED positions", format_positions(operations_totals['SPED Loss (15%)']))
+            # Use single column layout to prevent cut-off
+            st.metric("Schools in District", len(filtered_df))
+            st.metric("Total Possible Budget Cuts (15%)", format_currency(operations_totals['Budget Cut (15%)']))
+            st.metric("Total Position Losses (15%)", format_positions(operations_totals['Position Loss (15%)']))
+            st.metric("SPED Position Losses (15%)", format_positions(operations_totals['SPED Loss (15%)']))
         
         if len(filtered_df) > 0:
             # Create custom HTML table for full control over styling
