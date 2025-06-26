@@ -276,19 +276,28 @@ def main():
             numeric_cols = [col for col in df.columns if col != 'School Name']
             styler = styler.set_properties(subset=numeric_cols, **{'text-align': 'center'})
             
-            # Style column headers - WHITE background, bold, and centered
-            styler = styler.set_table_styles([
-                {'selector': 'thead th', 
-                 'props': [('background-color', 'white !important'), 
-                          ('font-weight', 'bold !important'),
-                          ('text-align', 'center !important'),
-                          ('border', '1px solid #ddd'),
-                          ('color', 'black !important')]}
-            ])
-            
             return styler
         
         if len(filtered_df) > 0:
+            
+            st.markdown("""
+            <style>
+            /* Style the dataframe headers */
+            .stDataFrame thead tr th {
+                background-color: white !important;
+                font-weight: bold !important;
+                text-align: center !important;
+                border: 1px solid #ddd !important;
+                color: black !important;
+            }
+            
+            /* Center numeric columns */
+            .stDataFrame tbody tr td:not(:first-child) {
+                text-align: center !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+                        
             styled_operations_df = style_operations_dataframe(formatted_operations_df)
             st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
             
