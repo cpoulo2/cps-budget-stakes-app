@@ -2,90 +2,45 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# Add new imports for PDF generation
+# Add new imports for formatted tables
 import polars as pl
 from great_tables import GT, loc, style
-import selenium
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-import base64
-import os
-import tempfile
-import io
 
 # PDF generation function
-def save_high_quality_pdf(table, filename):
-    """Save table as high-quality PDF using selenium"""
-    
-    # Set up Chrome options for high-quality PDF
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    
-    # PDF print settings for higher quality
-    chrome_options.add_experimental_option("useAutomationExtension", False)
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    
-    # Get HTML content directly instead of saving to file
+def create_html_download(table, title):
+    """Create downloadable HTML file from great_tables"""
     html_content = table._repr_html_()
     
-    # Create temporary HTML file
-    html_filename = filename.replace('.pdf', '_temp.html')
-    with open(html_filename, 'w', encoding='utf-8') as f:
-        f.write(f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                body {{ margin: 0; padding: 20px; font-family: Arial, sans-serif; }}
-                table {{ page-break-inside: avoid; }}
-            </style>
-        </head>
-        <body>
-            {html_content}
-        </body>
-        </html>
-        """)
+    full_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>{title}</title>
+        <style>
+            body {{ 
+                margin: 20px; 
+                padding: 20px; 
+                font-family: Arial, sans-serif; 
+                background-color: white;
+            }}
+            table {{ 
+                border-collapse: collapse; 
+                width: 100%; 
+                page-break-inside: avoid; 
+            }}
+            @media print {{
+                body {{ margin: 0.5in; }}
+            }}
+        </style>
+    </head>
+    <body>
+        {html_content}
+    </body>
+    </html>
+    """
+    return full_html.encode('utf-8')
     
-    # Convert to PDF with high quality settings
-    driver = webdriver.Chrome(options=chrome_options)
-    
-    try:
-        # Load the HTML file
-        driver.get(f"file:///{html_filename.replace(chr(92), '/')}")
-        
-        # Wait a moment for content to load
-        import time
-        time.sleep(2)
-        
-        # Print to PDF with custom settings
-        pdf_options = {
-            'landscape': False,
-            'displayHeaderFooter': False,
-            'printBackground': True,
-            'preferCSSPageSize': True,
-            'paperWidth': 8.5,
-            'paperHeight': 11,
-            'marginTop': 0.4,
-            'marginBottom': 0.4,
-            'marginLeft': 0.4,
-            'marginRight': 0.4,
-            'scale': 0.8
-        }
-        
-        pdf_data = driver.execute_cdp_cmd("Page.printToPDF", pdf_options)
-        
-        # Return PDF data as bytes
-        return base64.b64decode(pdf_data['data'])
-            
-    finally:
-        driver.quit()
-        # Clean up HTML file
-        if os.path.exists(html_filename):
-            os.remove(html_filename)
-
 def create_formatted_tables(df_filtered, district_name):
     """Create formatted GT tables for PDF export"""
     
@@ -382,46 +337,42 @@ def main():
             )
         
         with col2:
-            # PDF download of operations table
-            if st.button("📋 Generate Operations PDF", help="Create formatted PDF of operations data"):
-                with st.spinner("Generating Operations PDF..."):
+            # HTML download of operations table
+            if st.button("📋 Generate Operations Report", help="Create formatted HTML report of operations data"):
+                with st.spinner("Generating Operations Report..."):
                     try:
                         operations_table, _ = create_formatted_tables(filtered_df, district_name)
                         
-                        # Create temporary filename
-                        temp_filename = f"temp_operations_{filename_prefix}.pdf"
-                        pdf_data = save_high_quality_pdf(operations_table, temp_filename)
+                        html_data = create_html_download(operations_table, f"{district_name} - Operations Report")
                         
                         st.download_button(
-                            label="⬇️ Download Operations PDF",
-                            data=pdf_data,
-                            file_name=f"{filename_prefix}_operations.pdf",
-                            mime="application/pdf"
+                            label="⬇️ Download Operations Report (HTML)",
+                            data=html_data,
+                            file_name=f"{filename_prefix}_operations.html",
+                            mime="text/html"
                         )
-                        st.success("✅ Operations PDF ready for download!")
+                        st.success("✅ Operations report ready for download! (You can print to PDF from your browser)")
                     except Exception as e:
-                        st.error(f"Error generating PDF: {str(e)}")
+                        st.error(f"Error generating report: {str(e)}")
         
         with col3:
-            # PDF download of capital table
-            if st.button("🏗️ Generate Capital PDF", help="Create formatted PDF of capital needs data"):
-                with st.spinner("Generating Capital PDF..."):
+            # HTML download of capital table
+            if st.button("🏗️ Generate Capital Report", help="Create formatted HTML report of capital needs data"):
+                with st.spinner("Generating Capital Report..."):
                     try:
                         _, capital_table = create_formatted_tables(filtered_df, district_name)
                         
-                        # Create temporary filename
-                        temp_filename = f"temp_capital_{filename_prefix}.pdf"
-                        pdf_data = save_high_quality_pdf(capital_table, temp_filename)
+                        html_data = create_html_download(capital_table, f"{district_name} - Capital Needs Report")
                         
                         st.download_button(
-                            label="⬇️ Download Capital PDF",
-                            data=pdf_data,
-                            file_name=f"{filename_prefix}_capital.pdf",
-                            mime="application/pdf"
+                            label="⬇️ Download Capital Report (HTML)",
+                            data=html_data,
+                            file_name=f"{filename_prefix}_capital.html",
+                            mime="text/html"
                         )
-                        st.success("✅ Capital PDF ready for download!")
+                        st.success("✅ Capital report ready for download! (You can print to PDF from your browser)")
                     except Exception as e:
-                        st.error(f"Error generating PDF: {str(e)}")
+                        st.error(f"Error generating report: {str(e)}")
     else:
         st.info("Select a district or legislator to enable downloads.")
     
