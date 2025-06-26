@@ -243,11 +243,11 @@ def main():
             with col1:
                 st.metric("Schools", len(filtered_df))
             with col2:
-                st.metric("Total Budget FY25", format_currency(operations_totals['FY25 Budget']))
+                st.metric("Total possible budget cut", format_currency(operations_totals['Budget Cut (15%)']))
             with col3:
-                st.metric("Total Positions", format_positions(operations_totals['Total Positions']))
+                st.metric("Loss of positions", format_positions(operations_totals['Position Loss (15%)']))
             with col4:
-                st.metric("SPED Positions", format_positions(operations_totals['SPED Positions']))
+                st.metric("Loss of SPED positions", format_positions(operations_totals['SPED Loss (15%)']))
         
         # Enhanced styling function with red cuts
         def style_operations_dataframe(df):
@@ -271,7 +271,8 @@ def main():
                         lambda x: 'color: red',
                         subset=[col]
                     )
-                        # Center all numeric columns (all except School Name)
+            
+            # Center all numeric columns (all except School Name)
             numeric_cols = [col for col in df.columns if col != 'School Name']
             styler = styler.set_properties(subset=numeric_cols, **{'text-align': 'center'})
             
