@@ -264,9 +264,8 @@ def main():
         
         if len(filtered_df) > 0:
             # Create custom HTML table for capital data
+    
             def create_html_table_capital(df):
-                # No cut columns for capital table since it's just showing capital needs
-                
                 html = """
                 <style>
                 .custom-table-capital {
@@ -274,6 +273,14 @@ def main():
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
+                    max-height: 400px;
+                    overflow-y: auto;
+                    display: block;
+                }
+                .custom-table-capital thead {
+                    position: sticky;
+                    top: 0;
+                    z-index: 10;
                 }
                 .custom-table-capital th {
                     background-color: white !important;
@@ -282,11 +289,21 @@ def main():
                     padding: 10px;
                     border: 1px solid #ddd;
                     color: black !important;
+                    position: sticky;
+                    top: 0;
+                }
+                .custom-table-capital tbody {
+                    display: table;
+                    width: 100%;
+                }
+                .custom-table-capital tr {
+                    display: table-row;
                 }
                 .custom-table-capital td {
                     padding: 8px 10px;
                     border: 1px solid #ddd;
                     text-align: center;
+                    display: table-cell;
                 }
                 .custom-table-capital td:first-child {
                     text-align: left;
@@ -296,6 +313,7 @@ def main():
                     font-weight: bold;
                 }
                 </style>
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd;">
                 <table class="custom-table-capital">
                 <thead><tr>
                 """
@@ -310,10 +328,10 @@ def main():
                     html += "<tr>"
                     for col in df.columns:
                         value = row[col]
-                        html += f'<td>{value}</td>'  # No special styling for capital table
+                        html += f'<td>{value}</td>'
                     html += "</tr>"
                 
-                html += "</tbody></table>"
+                html += "</tbody></table></div>"
                 return html
             
             # Display custom HTML table for CAPITAL data
