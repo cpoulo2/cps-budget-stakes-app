@@ -282,8 +282,10 @@ def main():
             
             st.markdown("""
             <style>
-            /* Style the dataframe headers */
-            .stDataFrame thead tr th {
+            /* More specific selectors for dataframe headers */
+            div[data-testid="stDataFrame"] table thead tr th,
+            .stDataFrame table thead tr th,
+            .dataframe thead th {
                 background-color: white !important;
                 font-weight: bold !important;
                 text-align: center !important;
@@ -291,8 +293,9 @@ def main():
                 color: black !important;
             }
             
-            /* Center numeric columns */
-            .stDataFrame tbody tr td:not(:first-child) {
+            /* Center numeric columns with more specific selector */
+            div[data-testid="stDataFrame"] table tbody tr td:not(:first-child),
+            .stDataFrame table tbody tr td:not(:first-child) {
                 text-align: center !important;
             }
             </style>
