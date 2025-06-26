@@ -279,18 +279,36 @@ def main():
             return styler
         
         if len(filtered_df) > 0:
-            # Test CSS - this should make ALL text red if CSS is working
-            st.markdown("""
-            <style>
-            * {
-                font-weight: bold !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-                         
-            styled_operations_df = style_operations_dataframe(formatted_operations_df)
-            st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
+            # Instead, let's use column configuration
             
+            # Configure column display
+            column_config = {}
+            
+            # Configure numeric columns to be centered
+            numeric_columns = ['FY25 Budget', 'Budget Cut (7%)', 'Budget Cut (15%)', 'Total Positions', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Positions', 'SPED Loss (7%)', 'SPED Loss (15%)']
+            
+            for col in numeric_columns:
+                if col in formatted_operations_df.columns:
+                    column_config[col] = st.column_config.TextColumn(
+                        col,
+                        help=f"{col} values",
+                        width="medium"
+                    )
+            
+            # Configure School Name column
+            column_config["School Name"] = st.column_config.TextColumn(
+                "School Name",
+                width="large"
+            )
+            
+            styled_operations_df = style_operations_dataframe(formatted_operations_df)
+            st.dataframe(
+                styled_operations_df, 
+                use_container_width=True, 
+                hide_index=True,
+                column_config=column_config
+            )
+             
             # Download operations data
             operations_csv = operations_final_df.to_csv(index=False)
             filename_operations = f"operations_data_{selected_chamber.replace(' ', '_')}_{selected_district}.csv" if filter_type == "Chamber & District" else f"operations_data_{selected_legislator.replace(' ', '_').replace('.', '')}.csv"
