@@ -156,27 +156,48 @@ def main():
         color: black !important;
     }
     
-    /* ADD THIS NEW CSS TO FIX WHITE SPACE */
+    /* AGGRESSIVE WHITE SPACE FIXES */
     .main .block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        max-width: none !important;
+        width: 100% !important;
+    }
+    
+    /* Target the main content area specifically */
+    .stApp > div:first-child > div:first-child > div:first-child {
+        padding-left: 1rem !important;
+    }
+    
+    /* Remove all default margins and padding */
+    section.main > div {
         padding-left: 1rem !important;
         padding-right: 1rem !important;
         max-width: none !important;
     }
     
-    /* Remove extra margin from main content */
-    .stApp > div:first-child {
-        margin-left: 0 !important;
+    /* Force main content to use full width */
+    .element-container {
+        width: 100% !important;
     }
     
-    /* Fix main content area */
-    .css-1d391kg {
-        padding-top: 0rem !important;
+    /* Fix the content wrapper */
+    .css-1d391kg, .css-1v0mbdj, .e1tzin5v2 {
+        width: 100% !important;
+        max-width: none !important;
+        padding-left: 1rem !important;
     }
     
     /* Ensure tables use full width */
     .stTabs [data-baseweb="tab-panel"] {
         padding-left: 0 !important;
         padding-right: 0 !important;
+        width: 100% !important;
+    }
+    
+    /* Fix any remaining margin issues */
+    .stMarkdown {
+        width: 100% !important;
     }
     
     /* Force all text to be black */
