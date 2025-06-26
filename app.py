@@ -147,9 +147,7 @@ def load_data():
 def main():
     st.title("🏫 CPS Budget Stakes Dashboard")
     st.markdown("**Filter schools by legislative district to view capital needs and the impact of budget cuts**")
-    # NUCLEAR OPTION - Force container to full width
-    st.markdown('<style>div.block-container{padding-left:0rem !important;}</style>', unsafe_allow_html=True)
-        
+ 
     # Force light mode
     st.markdown("""
     <style>
@@ -158,62 +156,21 @@ def main():
         color: black !important;
     }
     
-    /* AGGRESSIVE WHITE SPACE FIXES */
+    /* NUCLEAR WHITE SPACE FIX */
     .main .block-container {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding: 1rem 0rem !important;
         max-width: none !important;
         width: 100% !important;
     }
     
-    /* Target the main content area specifically */
-    .stApp > div:first-child > div:first-child > div:first-child {
-        padding-left: 1rem !important;
-    }
-    
-    /* Remove all default margins and padding */
     section.main > div {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
         max-width: none !important;
     }
     
-    /* Force main content to use full width */
     .element-container {
         width: 100% !important;
-        max-width: none !important;
-    }
-    
-    /* Fix the content wrapper */
-    .css-1d391kg, .css-1v0mbdj, .e1tzin5v2 {
-        width: 100% !important;
-        max-width: none !important;
-        padding-left: 1rem !important;
-    }
-    
-    /* Remove margin from app container */
-    .stApp > div:first-child {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    
-    /* Ensure tables use full width */
-    .stTabs [data-baseweb="tab-panel"] {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        width: 100% !important;
-    }
-    
-    /* Fix any remaining margin issues */
-    .stMarkdown {
-        width: 100% !important;
-    }
-    
-    /* NEW: Fix the main content container padding */
-    [data-testid="stAppViewContainer"] > .main > div {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-        max-width: none !important;
     }
     
     /* Force all text to be black */
@@ -221,7 +178,7 @@ def main():
         color: black !important;
     }
     
-    /* Fix tab labels specifically */
+    /* Fix tab labels */
     .stTabs [data-baseweb="tab-list"] button {
         color: black !important;
     }
@@ -231,80 +188,13 @@ def main():
         font-weight: bold !important;
     }
     
-    /* Fix subheaders in tabs */
-    .stTabs [data-baseweb="tab-panel"] h3 {
-        color: black !important;
-    }
-    
-    /* Force all headers to be black */
+    /* Fix headers */
     h1, h2, h3, h4, h5, h6 {
         color: black !important;
     }
     
-    /* Fix metric labels and values */
-    .stMetric > div > div {
-        color: black !important;
-    }
-    
-    .stMetric label {
-        color: black !important;
-    }
-    
-    .stMetric > div > div > div {
-        color: black !important;
-    }
-    
-    /* Fix all metric text */
+    /* Fix metrics */
     [data-testid="metric-container"] {
-        color: black !important;
-    }
-    
-    [data-testid="metric-container"] > div {
-        color: black !important;
-    }
-    
-    [data-testid="metric-container"] label {
-        color: black !important;
-    }
-    
-    /* Ensure sidebar is also light */
-    .css-1d391kg {
-        background-color: #f0f2f6 !important;
-    }
-    
-    /* Fix download buttons and other buttons */
-    .stDownloadButton > button {
-        background-color: white !important;
-        color: black !important;
-        border: 1px solid #ddd !important;
-    }
-    
-    .stDownloadButton > button:hover {
-        background-color: #f0f2f6 !important;
-        color: black !important;
-    }
-    
-    /* Fix all button types */
-    .stButton > button {
-        background-color: white !important;
-        color: black !important;
-        border: 1px solid #ddd !important;
-    }
-    
-    .stButton > button:hover {
-        background-color: #f0f2f6 !important;
-        color: black !important;
-    }
-    
-    /* Fix selectbox and other form elements */
-    .stSelectbox > div > div {
-        background-color: white !important;
-        color: black !important;
-    }
-    
-    /* Fix radio buttons */
-    .stRadio > div {
-        background-color: white !important;
         color: black !important;
     }
     </style>
