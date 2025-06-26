@@ -279,35 +279,66 @@ def main():
             return styler
         
         if len(filtered_df) > 0:
-            # Instead, let's use column configuration
+            # Create custom HTML table for full control over styling
+            def create_html_table(df):
+                cut_columns = ['Budget Cut (7%)', 'Budget Cut (15%)', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Loss (7%)', 'SPED Loss (15%)']
+                
+                html = """
+                <style>
+                .custom-table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    font-family: 'Source Sans Pro', sans-serif;
+                    font-size: 14px;
+                }
+                .custom-table th {
+                    background-color: white !important;
+                    font-weight: bold !important;
+                    text-align: center !important;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    color: black !important;
+                }
+                .custom-table td {
+                    padding: 8px 10px;
+                    border: 1px solid #ddd;
+                    text-align: center;
+                }
+                .custom-table td:first-child {
+                    text-align: left;
+                }
+                .custom-table tr:last-child {
+                    background-color: #f0f0f0;
+                    font-weight: bold;
+                }
+                .cut-column {
+                    color: red !important;
+                    font-weight: bold;
+                }
+                </style>
+                <table class="custom-table">
+                <thead><tr>
+                """
+                
+                # Add headers
+                for col in df.columns:
+                    html += f"<th>{col}</th>"
+                html += "</tr></thead><tbody>"
+                
+                # Add data rows
+                for idx, row in df.iterrows():
+                    html += "<tr>"
+                    for col in df.columns:
+                        value = row[col]
+                        css_class = "cut-column" if col in cut_columns else ""
+                        html += f'<td class="{css_class}">{value}</td>'
+                    html += "</tr>"
+                
+                html += "</tbody></table>"
+                return html
             
-            # Configure column display
-            column_config = {}
-            
-            # Configure numeric columns to be centered
-            numeric_columns = ['FY25 Budget', 'Budget Cut (7%)', 'Budget Cut (15%)', 'Total Positions', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Positions', 'SPED Loss (7%)', 'SPED Loss (15%)']
-            
-            for col in numeric_columns:
-                if col in formatted_operations_df.columns:
-                    column_config[col] = st.column_config.TextColumn(
-                        col,
-                        help=f"{col} values",
-                        width="medium"
-                    )
-            
-            # Configure School Name column
-            column_config["School Name"] = st.column_config.TextColumn(
-                "School Name",
-                width="large"
-            )
-            
-            styled_operations_df = style_operations_dataframe(formatted_operations_df)
-            st.dataframe(
-                styled_operations_df, 
-                use_container_width=True, 
-                hide_index=True,
-                column_config=column_config
-            )
+            # Display custom HTML table
+            st.markdown(create_html_table(formatted_operations_df), unsafe_allow_html=True)
              
             # Download operations data
             operations_csv = operations_final_df.to_csv(index=False)
@@ -320,13 +351,7 @@ def main():
             )
         else:
             st.warning("No schools found for the selected criteria.")
-    
-    # Additional info (keep this)
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("**Data Info:**")
-    st.sidebar.markdown(f"• Total Schools: {len(df)}")
-    st.sidebar.markdown(f"• Chambers: {len(df['Chamber'].unique())}")
-    st.sidebar.markdown(f"• Districts: {len(df['District'].unique())}")
+
 
 if __name__ == "__main__":
     main()
