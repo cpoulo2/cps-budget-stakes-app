@@ -243,7 +243,7 @@ def main():
             with col1:
                 st.metric("Schools", len(filtered_df))
             with col2:
-                st.metric("Total possible budget cut", format_currency(operations_totals['Budget Cut (15%)']))
+                st.metric("Total possible budget cuts", format_currency(operations_totals['Budget Cut (15%)']))
             with col3:
                 st.metric("Loss of positions", format_positions(operations_totals['Position Loss (15%)']))
             with col4:
@@ -287,9 +287,20 @@ def main():
             
             return styler
         
+# ...existing code...
+
         if len(filtered_df) > 0:
+            # TEST: Display the raw dataframe first
+            st.write("**Raw dataframe (no styling):**")
+            st.dataframe(formatted_operations_df, use_container_width=True, hide_index=True)
+            
+            st.write("**Styled dataframe:**")
             styled_operations_df = style_operations_dataframe(formatted_operations_df)
-            st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
+            st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)        
+        
+#        if len(filtered_df) > 0:
+#            styled_operations_df = style_operations_dataframe(formatted_operations_df)
+#            st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
             
             # Download operations data
             operations_csv = operations_final_df.to_csv(index=False)
