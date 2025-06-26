@@ -275,7 +275,7 @@ def main():
             return styler
         
         if len(filtered_df) > 0:
-            styled_operations_df = style_operations_dataframe(formatted_operations_df, axis=1)
+            styled_operations_df = style_operations_dataframe(formatted_operations_df)
             st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
             
             # Download operations data
