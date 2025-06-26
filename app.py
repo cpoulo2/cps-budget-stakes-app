@@ -6,7 +6,9 @@ import numpy as np
 st.set_page_config(
     page_title="CPS Budget Stakes Dashboard",
     page_icon="🏫",
-    layout="wide"
+    layout="wide",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # Load data
