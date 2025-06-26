@@ -158,21 +158,21 @@ def main():
     
     /* AGGRESSIVE WHITE SPACE FIXES */
     .main .block-container {
-        padding-left: 0rem !important;
-        padding-right: 0rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
         max-width: none !important;
         width: 100% !important;
     }
     
     /* Target the main content area specifically */
     .stApp > div:first-child > div:first-child > div:first-child {
-        padding-left: 0rem !important;
+        padding-left: 1rem !important;
     }
     
     /* Remove all default margins and padding */
     section.main > div {
-        padding-left: 0rem !important;
-        padding-right: 0rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
         max-width: none !important;
     }
     
@@ -186,7 +186,7 @@ def main():
     .css-1d391kg, .css-1v0mbdj, .e1tzin5v2 {
         width: 100% !important;
         max-width: none !important;
-        padding-left: 0rem !important;
+        padding-left: 1rem !important;
     }
     
     /* Remove margin from app container */
@@ -205,6 +205,13 @@ def main():
     /* Fix any remaining margin issues */
     .stMarkdown {
         width: 100% !important;
+    }
+    
+    /* NEW: Fix the main content container padding */
+    [data-testid="stAppViewContainer"] > .main > div {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        max-width: none !important;
     }
     
     /* Force all text to be black */
@@ -512,7 +519,7 @@ def main():
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
-                    margin: 0 auto; !important;  /* Changed from "margin: 0 auto;" */
+                    margin: 0 auto; !important;
                 }
                 .custom-table-capital thead {
                     position: sticky;
@@ -626,13 +633,17 @@ def main():
         for col in position_cols:
             formatted_operations_df[col] = formatted_operations_df[col].apply(format_positions)
         
-        # Display operations metrics with better spacing
+        # Display operations metrics
         if len(filtered_df) > 0:
-            # Use single column layout to prevent cut-off
-            st.metric("Schools in District", len(filtered_df))
-            st.metric("Total Possible Budget Cuts (15%)", format_currency(operations_totals['Budget Cut (15%)']))
-            st.metric("Total Position Losses (15%)", format_positions(operations_totals['Position Loss (15%)']))
-            st.metric("SPED Position Losses (15%)", format_positions(operations_totals['SPED Loss (15%)']))
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Schools", len(filtered_df))
+            with col2:
+                st.metric("Total possible budget cuts", format_currency(operations_totals['Budget Cut (15%)']))
+            with col3:
+                st.metric("Loss of positions", format_positions(operations_totals['Position Loss (15%)']))
+            with col4:
+                st.metric("Loss of SPED positions", format_positions(operations_totals['SPED Loss (15%)']))
         
         if len(filtered_df) > 0:
             # Create custom HTML table for full control over styling
@@ -646,7 +657,7 @@ def main():
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
-                    margin: 0 !important;  /* Changed from "margin: 0 auto;" */
+                    margin: 0 !important;
                 }
                 .custom-table thead {
                     position: sticky;
