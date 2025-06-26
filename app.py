@@ -282,23 +282,30 @@ def main():
             # Test CSS - this should make ALL text red if CSS is working
             st.markdown("""
             <style>
-            /* Style dataframe headers */
-            div[data-testid="stDataFrame"] table thead tr th {
+            /* Try multiple selectors for headers */
+            .stDataFrame table thead th,
+            .stDataFrame table th,
+            div[data-testid="stDataFrame"] th,
+            div[data-testid="stDataFrame"] thead th,
+            table thead th,
+            th {
                 background-color: white !important;
                 font-weight: bold !important;
                 text-align: center !important;
-                border: 1px solid #ddd !important;
                 color: black !important;
-                padding: 8px !important;
             }
             
-            /* Center all numeric columns (everything except first column) */
-            div[data-testid="stDataFrame"] table tbody tr td:not(:first-child) {
+            /* Center numeric columns */
+            .stDataFrame table td:not(:first-child),
+            div[data-testid="stDataFrame"] td:not(:first-child),
+            table td:not(:first-child) {
                 text-align: center !important;
             }
             
-            /* Make sure first column (School Name) stays left-aligned */
-            div[data-testid="stDataFrame"] table tbody tr td:first-child {
+            /* Left align first column */
+            .stDataFrame table td:first-child,
+            div[data-testid="stDataFrame"] td:first-child,
+            table td:first-child {
                 text-align: left !important;
             }
             </style>
