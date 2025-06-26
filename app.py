@@ -147,7 +147,9 @@ def load_data():
 def main():
     st.title("🏫 CPS Budget Stakes Dashboard")
     st.markdown("**Filter schools by legislative district to view capital needs and the impact of budget cuts**")
-    
+    # NUCLEAR OPTION - Force container to full width
+    st.markdown('<style>div.block-container{padding-left:0rem !important;}</style>', unsafe_allow_html=True)
+        
     # Force light mode
     st.markdown("""
     <style>
