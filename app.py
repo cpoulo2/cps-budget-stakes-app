@@ -158,8 +158,8 @@ def main():
     
     /* TARGET MAIN CONTENT AREA SPECIFICALLY */
     .main .block-container {
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
+        padding-left: 4rem !important;
+        padding-right: 4rem !important;
         max-width: none !important;
         width: 100% !important;
     }
