@@ -271,6 +271,18 @@ def main():
                         lambda x: 'color: red',
                         subset=[col]
                     )
+                        # Center all numeric columns (all except School Name)
+            numeric_cols = [col for col in df.columns if col != 'School Name']
+            styler = styler.set_properties(subset=numeric_cols, **{'text-align': 'center'})
+            
+            # Style column headers - white background and bold
+            styler = styler.set_table_styles([
+                {'selector': 'th', 
+                 'props': [('background-color', 'white'), 
+                          ('font-weight', 'bold'),
+                          ('text-align', 'center'),
+                          ('border', '1px solid #ddd')]}
+            ])
             
             return styler
         
