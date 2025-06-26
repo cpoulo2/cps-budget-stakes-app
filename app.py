@@ -35,8 +35,44 @@ def main():
     .css-1d391kg {
         background-color: #f0f2f6 !important;
     }
+    
+    /* Fix download buttons and other buttons */
+    .stDownloadButton > button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .stDownloadButton > button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Fix all button types */
+    .stButton > button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .stButton > button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Fix selectbox and other form elements */
+    .stSelectbox > div > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Fix radio buttons */
+    .stRadio > div {
+        background-color: white !important;
+        color: black !important;
+    }
     </style>
-    """, unsafe_allow_html=True)    
+    """, unsafe_allow_html=True)
     
     
     # Load data
