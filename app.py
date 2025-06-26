@@ -175,7 +175,6 @@ def main():
     st.markdown("**Filter schools by legislative district to view capital needs and the impact of budget cuts**")
     
     # Force light mode
-    # Force light mode
     st.markdown("""
     <style>
     .stApp {
@@ -277,7 +276,6 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
-    
     # Load data
     df = load_data()
     if df is None:
@@ -353,7 +351,83 @@ def main():
         'SPED Loss (15%)'
     ]
     
-        # Create tabs after filtering data
+    # CONSOLIDATED DOWNLOAD SECTION
+    st.markdown("---")
+    st.subheader("📥 Download Data")
+    
+    if len(filtered_df) > 0:
+        # Prepare data for downloads
+        all_data_df = filtered_df[display_columns].copy()
+        
+        # Create district name for files
+        if filter_type == "Chamber & District":
+            district_name = f"{selected_chamber} District {selected_district}"
+            filename_prefix = f"{selected_chamber.replace(' ', '_')}_District_{selected_district}"
+        else:
+            district_name = f"{selected_legislator}"
+            filename_prefix = f"{selected_legislator.replace(' ', '_').replace('.', '')}"
+        
+        # Create 3 columns for download buttons
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            # CSV download of all data
+            all_csv = all_data_df.to_csv(index=False)
+            st.download_button(
+                label="📊 Download All Data (CSV)",
+                data=all_csv,
+                file_name=f"{filename_prefix}_all_data.csv",
+                mime="text/csv",
+                help="Download all capital and operations data as CSV"
+            )
+        
+        with col2:
+            # PDF download of operations table
+            if st.button("📋 Generate Operations PDF", help="Create formatted PDF of operations data"):
+                with st.spinner("Generating Operations PDF..."):
+                    try:
+                        operations_table, _ = create_formatted_tables(filtered_df, district_name)
+                        
+                        # Create temporary filename
+                        temp_filename = f"temp_operations_{filename_prefix}.pdf"
+                        pdf_data = save_high_quality_pdf(operations_table, temp_filename)
+                        
+                        st.download_button(
+                            label="⬇️ Download Operations PDF",
+                            data=pdf_data,
+                            file_name=f"{filename_prefix}_operations.pdf",
+                            mime="application/pdf"
+                        )
+                        st.success("✅ Operations PDF ready for download!")
+                    except Exception as e:
+                        st.error(f"Error generating PDF: {str(e)}")
+        
+        with col3:
+            # PDF download of capital table
+            if st.button("🏗️ Generate Capital PDF", help="Create formatted PDF of capital needs data"):
+                with st.spinner("Generating Capital PDF..."):
+                    try:
+                        _, capital_table = create_formatted_tables(filtered_df, district_name)
+                        
+                        # Create temporary filename
+                        temp_filename = f"temp_capital_{filename_prefix}.pdf"
+                        pdf_data = save_high_quality_pdf(capital_table, temp_filename)
+                        
+                        st.download_button(
+                            label="⬇️ Download Capital PDF",
+                            data=pdf_data,
+                            file_name=f"{filename_prefix}_capital.pdf",
+                            mime="application/pdf"
+                        )
+                        st.success("✅ Capital PDF ready for download!")
+                    except Exception as e:
+                        st.error(f"Error generating PDF: {str(e)}")
+    else:
+        st.info("Select a district or legislator to enable downloads.")
+    
+    st.markdown("---")
+
+    # Create tabs for data display
     tab1, tab2 = st.tabs(["💰 Capital Needs", "🏢 Operations & Positions"])
     
     # Format currency and numbers functions
@@ -411,16 +485,8 @@ def main():
             with col3:
                 st.metric("Total Capital Needs", format_currency(capital_totals['Total Capital Needs']))
         
-        # Display capital table
-        def highlight_totals_capital(row):
-            if row.name == len(capital_final_df) - 1:  # Last row (totals)
-                return ['background-color: #f0f0f0; font-weight: bold'] * len(row)
-            else:
-                return [''] * len(row)
-        
         if len(filtered_df) > 0:
             # Create custom HTML table for capital data
-    
             def create_html_table_capital(df):
                 html = """
                 <style>
@@ -429,6 +495,7 @@ def main():
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
+                    margin: 0 auto;
                 }
                 .custom-table-capital thead {
                     position: sticky;
@@ -459,7 +526,7 @@ def main():
                     font-weight: bold;
                 }
                 </style>
-                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd;">
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; width: 100%;">
                 <table class="custom-table-capital">
                 <thead><tr>
                 """
@@ -483,15 +550,6 @@ def main():
             # Display custom HTML table for CAPITAL data
             st.markdown(create_html_table_capital(capital_final_df), unsafe_allow_html=True)
             
-            # Download capital data
-            capital_csv = capital_final_df.to_csv(index=False)
-            filename_capital = f"capital_needs_{selected_chamber.replace(' ', '_')}_{selected_district}.csv" if filter_type == "Chamber & District" else f"capital_needs_{selected_legislator.replace(' ', '_').replace('.', '')}.csv"
-            st.download_button(
-                label="📥 Download Capital Data as CSV",
-                data=capital_csv,
-                file_name=filename_capital,
-                mime="text/csv"
-            )
         else:
             st.warning("No schools found for the selected criteria.")
     
@@ -563,35 +621,6 @@ def main():
             with col4:
                 st.metric("Loss of SPED positions", format_positions(operations_totals['SPED Loss (15%)']))
         
-        # Enhanced styling function with red cuts
-        def style_operations_dataframe(df):
-            # Define cut columns that should be red
-            cut_columns = ['Budget Cut (7%)', 'Budget Cut (15%)', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Loss (7%)', 'SPED Loss (15%)']
-            
-            # Create styler object
-            styler = df.style
-            
-            # Highlight totals row
-            styler = styler.apply(
-                lambda row: ['background-color: #f0f0f0; font-weight: bold'] * len(row) 
-                if row.name == len(df) - 1 else [''] * len(row),
-                axis=1
-            )
-            
-            # Make cut columns red
-            for col in cut_columns:
-                if col in df.columns:
-                    styler = styler.applymap(
-                        lambda x: 'color: red',
-                        subset=[col]
-                    )
-            
-            # Center all numeric columns (all except School Name)
-            numeric_cols = [col for col in df.columns if col != 'School Name']
-            styler = styler.set_properties(subset=numeric_cols, **{'text-align': 'center'})
-            
-            return styler
-        
         if len(filtered_df) > 0:
             # Create custom HTML table for full control over styling
             def create_html_table(df):
@@ -604,6 +633,7 @@ def main():
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
+                    margin: 0 auto;
                 }
                 .custom-table thead {
                     position: sticky;
@@ -638,7 +668,7 @@ def main():
                     font-weight: bold;
                 }
                 </style>
-                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd;">
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; width: 100%;">
                 <table class="custom-table">
                 <thead><tr>
                 """
@@ -657,21 +687,11 @@ def main():
                         html += f'<td class="{css_class}">{value}</td>'
                     html += "</tr>"
                 
-                html += "</tbody></table>"
+                html += "</tbody></table></div>"
                 return html
             
             # Display custom HTML table
-            st.markdown(create_html_table(formatted_operations_df), unsafe_allow_html=True)
-             
-            # Download operations data
-            operations_csv = operations_final_df.to_csv(index=False)
-            filename_operations = f"operations_data_{selected_chamber.replace(' ', '_')}_{selected_district}.csv" if filter_type == "Chamber & District" else f"operations_data_{selected_legislator.replace(' ', '_').replace('.', '')}.csv"
-            st.download_button(
-                label="📥 Download Operations Data as CSV",
-                data=operations_csv,
-                file_name=filename_operations,
-                mime="text/csv"
-            )
+            st.markdown(create_html_table(formatted_operations_df), unsafe_allow_html=True)       
         else:
             st.warning("No schools found for the selected criteria.")
 
