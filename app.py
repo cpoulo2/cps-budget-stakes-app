@@ -276,31 +276,21 @@ def main():
             numeric_cols = [col for col in df.columns if col != 'School Name']
             styler = styler.set_properties(subset=numeric_cols, **{'text-align': 'center'})
             
-            # Style column headers - white background and bold
+            # Style column headers - WHITE background, bold, and centered
             styler = styler.set_table_styles([
-                {'selector': 'th', 
-                 'props': [('background-color', 'white'), 
-                          ('font-weight', 'bold'),
-                          ('text-align', 'center'),
-                          ('border', '1px solid #ddd')]}
+                {'selector': 'thead th', 
+                 'props': [('background-color', 'white !important'), 
+                          ('font-weight', 'bold !important'),
+                          ('text-align', 'center !important'),
+                          ('border', '1px solid #ddd'),
+                          ('color', 'black !important')]}
             ])
             
             return styler
         
-# ...existing code...
-
         if len(filtered_df) > 0:
-            # TEST: Display the raw dataframe first
-            st.write("**Raw dataframe (no styling):**")
-            st.dataframe(formatted_operations_df, use_container_width=True, hide_index=True)
-            
-            st.write("**Styled dataframe:**")
             styled_operations_df = style_operations_dataframe(formatted_operations_df)
-            st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)        
-        
-#        if len(filtered_df) > 0:
-#            styled_operations_df = style_operations_dataframe(formatted_operations_df)
-#            st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
+            st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
             
             # Download operations data
             operations_csv = operations_final_df.to_csv(index=False)
