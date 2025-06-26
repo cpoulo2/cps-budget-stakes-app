@@ -519,7 +519,7 @@ def main():
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
-                    margin: 0 auto; !important;
+                    margin: 0 !important;
                 }
                 .custom-table-capital thead {
                     position: sticky;
