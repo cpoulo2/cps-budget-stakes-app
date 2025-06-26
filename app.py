@@ -166,19 +166,19 @@ def main():
                 return [''] * len(row)
         
         if len(filtered_df) > 0:
-            # Create custom HTML table for full control over styling
-            def create_html_table(df):
-                cap_columns = ['Immediate (within 5 years)', 'Total Capital Needs']
+            # Create custom HTML table for capital data
+            def create_html_table_capital(df):
+                # No cut columns for capital table since it's just showing capital needs
                 
                 html = """
                 <style>
-                .custom-table {
+                .custom-table-capital {
                     border-collapse: collapse;
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
                 }
-                .custom-table th {
+                .custom-table-capital th {
                     background-color: white !important;
                     font-weight: bold !important;
                     text-align: center !important;
@@ -186,24 +186,20 @@ def main():
                     border: 1px solid #ddd;
                     color: black !important;
                 }
-                .custom-table td {
+                .custom-table-capital td {
                     padding: 8px 10px;
                     border: 1px solid #ddd;
                     text-align: center;
                 }
-                .custom-table td:first-child {
+                .custom-table-capital td:first-child {
                     text-align: left;
                 }
-                .custom-table tr:last-child {
+                .custom-table-capital tr:last-child {
                     background-color: #f0f0f0;
                     font-weight: bold;
                 }
-                .cut-column {
-                    color: red !important;
-                    font-weight: bold;
-                }
                 </style>
-                <table class="custom-table">
+                <table class="custom-table-capital">
                 <thead><tr>
                 """
                 
@@ -217,15 +213,14 @@ def main():
                     html += "<tr>"
                     for col in df.columns:
                         value = row[col]
-                        css_class = "cut-column" if col in cap_columns else ""
-                        html += f'<td class="{css_class}">{value}</td>'
+                        html += f'<td>{value}</td>'  # No special styling for capital table
                     html += "</tr>"
                 
                 html += "</tbody></table>"
                 return html
             
-            # Display custom HTML table
-            st.markdown(create_html_table(formatted_operations_df), unsafe_allow_html=True)
+            # Display custom HTML table for CAPITAL data
+            st.markdown(create_html_table_capital(capital_final_df), unsafe_allow_html=True)
             
             # Download capital data
             capital_csv = capital_final_df.to_csv(index=False)
