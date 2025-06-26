@@ -282,11 +282,28 @@ def main():
             # Test CSS - this should make ALL text red if CSS is working
             st.markdown("""
             <style>
-            .stDataFrame {
-                border: 5px solid red !important;
+            /* Style dataframe headers */
+            div[data-testid="stDataFrame"] table thead tr th {
+                background-color: white !important;
+                font-weight: bold !important;
+                text-align: center !important;
+                border: 1px solid #ddd !important;
+                color: black !important;
+                padding: 8px !important;
+            }
+            
+            /* Center all numeric columns (everything except first column) */
+            div[data-testid="stDataFrame"] table tbody tr td:not(:first-child) {
+                text-align: center !important;
+            }
+            
+            /* Make sure first column (School Name) stays left-aligned */
+            div[data-testid="stDataFrame"] table tbody tr td:first-child {
+                text-align: left !important;
             }
             </style>
-            """, unsafe_allow_html=True)                   
+            """, unsafe_allow_html=True)
+                         
             styled_operations_df = style_operations_dataframe(formatted_operations_df)
             st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
             
