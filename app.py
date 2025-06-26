@@ -158,16 +158,16 @@ def main():
     
     /* TARGET MAIN CONTENT AREA SPECIFICALLY */
     .main .block-container {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
         max-width: none !important;
         width: 100% !important;
     }
     
     /* Use stMain to target main content */
     .stMain .block-container {
-        padding-left: 0rem !important;
-        padding-right: 0rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
         max-width: none !important;
     }
     
