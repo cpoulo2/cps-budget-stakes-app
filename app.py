@@ -2,6 +2,162 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+# Add new imports for PDF generation
+import polars as pl
+from great_tables import GT, loc, style
+import selenium
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import base64
+import os
+import tempfile
+import io
+
+# PDF generation function
+def save_high_quality_pdf(table, filename):
+    """Save table as high-quality PDF using selenium"""
+    
+    # Set up Chrome options for high-quality PDF
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    
+    # PDF print settings for higher quality
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    
+    # Get HTML content directly instead of saving to file
+    html_content = table._repr_html_()
+    
+    # Create temporary HTML file
+    html_filename = filename.replace('.pdf', '_temp.html')
+    with open(html_filename, 'w', encoding='utf-8') as f:
+        f.write(f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body {{ margin: 0; padding: 20px; font-family: Arial, sans-serif; }}
+                table {{ page-break-inside: avoid; }}
+            </style>
+        </head>
+        <body>
+            {html_content}
+        </body>
+        </html>
+        """)
+    
+    # Convert to PDF with high quality settings
+    driver = webdriver.Chrome(options=chrome_options)
+    
+    try:
+        # Load the HTML file
+        driver.get(f"file:///{html_filename.replace(chr(92), '/')}")
+        
+        # Wait a moment for content to load
+        import time
+        time.sleep(2)
+        
+        # Print to PDF with custom settings
+        pdf_options = {
+            'landscape': False,
+            'displayHeaderFooter': False,
+            'printBackground': True,
+            'preferCSSPageSize': True,
+            'paperWidth': 8.5,
+            'paperHeight': 11,
+            'marginTop': 0.4,
+            'marginBottom': 0.4,
+            'marginLeft': 0.4,
+            'marginRight': 0.4,
+            'scale': 0.8
+        }
+        
+        pdf_data = driver.execute_cdp_cmd("Page.printToPDF", pdf_options)
+        
+        # Return PDF data as bytes
+        return base64.b64decode(pdf_data['data'])
+            
+    finally:
+        driver.quit()
+        # Clean up HTML file
+        if os.path.exists(html_filename):
+            os.remove(html_filename)
+
+def create_formatted_tables(df_filtered, district_name):
+    """Create formatted GT tables for PDF export"""
+    
+    # Prepare operations data
+    df_operations = df_filtered[['School Name', 
+                                'Operational Budget FY25',
+                                'Operations 7% Cut',
+                                'Operations 15% Cut',
+                                'Positions', 
+                                'Positions 7% Cut', 
+                                'Positions 15% Cut', 
+                                'SPED Positions',
+                                'SPED Positions 7% Cut',
+                                'SPED Positions 15% Cut']].copy()
+    
+    # Prepare capital data
+    df_capital = df_filtered[['School Name',
+                             'Immediate Capital Needs',
+                             'Total Capital Needs']].copy()
+    df_capital.columns = ['School Name', 'Immediate (within 5 years)', 'Total']
+    
+    # Convert to polars
+    df_operations_pl = pl.from_pandas(df_operations)
+    df_capital_pl = pl.from_pandas(df_capital)
+    
+    # Define column groups
+    budget_cols = ["Operational Budget FY25", "Operations 7% Cut", "Operations 15% Cut"]
+    position_cols = ["Positions", "Positions 7% Cut", "Positions 15% Cut"]
+    sped_cols = ["SPED Positions", "SPED Positions 7% Cut", "SPED Positions 15% Cut"]
+    cuts_cols = ["Operations 7% Cut", "Operations 15% Cut", "Positions 7% Cut", "Positions 15% Cut", "SPED Positions 7% Cut", "SPED Positions 15% Cut"]
+    
+    # Create operations table
+    operations_table = (
+        GT(df_operations_pl)
+        .tab_header(f"{district_name} - CPS School-Level Budget Cut Impacts")
+        .tab_spanner(label="Operations Budget Impact", columns=budget_cols)
+        .tab_spanner(label="Positions Impact", columns=position_cols)
+        .tab_spanner(label="SPED Positions Impact", columns=sped_cols)
+        .cols_label(
+            **{
+                "Operational Budget FY25": "FY25 Budget",
+                "Operations 7% Cut": "7% Cuts",
+                "Operations 15% Cut": "15% Cuts",
+                "Positions 7% Cut": "7% Cuts",
+                "Positions 15% Cut": "15% Cuts",
+                "SPED Positions 7% Cut": "7% Cuts",
+                "SPED Positions 15% Cut": "15% Cuts"
+            }
+        )
+        .fmt_currency(columns=budget_cols, decimals=0)
+        .fmt_number(columns=position_cols + sped_cols, decimals=1)
+        .sub_missing(missing_text="")
+        .tab_style(style=style.text(color="red"), locations=loc.body(columns=cuts_cols))
+        .tab_style(style=style.text(weight="bold"), locations=loc.body(rows=pl.col("School Name").str.contains("TOTAL")))
+    )
+    
+    # Create capital table
+    capital_table = (
+        GT(df_capital_pl)
+        .tab_header(f"{district_name} - CPS School Capital Needs")
+        .fmt_currency(columns=["Immediate (within 5 years)", "Total"], decimals=0)
+        .sub_missing(missing_text="")
+        .tab_style(style=style.text(weight="bold"), locations=loc.body(rows=pl.col("School Name").str.contains("TOTAL")))
+        .cols_width({
+            "School Name": "250px",
+            "Immediate (within 5 years)": "150px",
+            "Total": "150px"
+        })
+    )
+    
+    return operations_table, capital_table
+
 # Load data
 @st.cache_data
 def load_data():
