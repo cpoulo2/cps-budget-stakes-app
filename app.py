@@ -279,28 +279,14 @@ def main():
             return styler
         
         if len(filtered_df) > 0:
-            
+            # Test CSS - this should make ALL text red if CSS is working
             st.markdown("""
             <style>
-            /* More specific selectors for dataframe headers */
-            div[data-testid="stDataFrame"] table thead tr th,
-            .stDataFrame table thead tr th,
-            .dataframe thead th {
-                background-color: white !important;
-                font-weight: bold !important;
-                text-align: center !important;
-                border: 1px solid #ddd !important;
-                color: black !important;
-            }
-            
-            /* Center numeric columns with more specific selector */
-            div[data-testid="stDataFrame"] table tbody tr td:not(:first-child),
-            .stDataFrame table tbody tr td:not(:first-child) {
-                text-align: center !important;
+            .stDataFrame {
+                border: 5px solid red !important;
             }
             </style>
-            """, unsafe_allow_html=True)
-                        
+            """, unsafe_allow_html=True)                   
             styled_operations_df = style_operations_dataframe(formatted_operations_df)
             st.dataframe(styled_operations_df, use_container_width=True, hide_index=True)
             
