@@ -307,27 +307,11 @@ def main():
         'SPED Positions 15% Cut'
     ]
     
-    # Create display dataframe
-    display_df = filtered_df[display_columns].copy()
-    
-    display_df.columns = [
-        'School Name',
-        'Immediate (within 5 years)',
-        'Total Capital Needs', 
-        'FY25 Budget',
-        'Budget Cut (7%)',
-        'Budget Cut (15%)',
-        'Total Positions',
-        'Position Loss (7%)',
-        'Position Loss (15%)',
-        'SPED Positions',
-        'SPED Loss (7%)',
-        'SPED Loss (15%)'
-    ]
+
     
     # CONSOLIDATED DOWNLOAD SECTION
-    st.markdown("---")
-    st.subheader("📥 Download Data")
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("📥 Download Data")
     
     if len(filtered_df) > 0:
         # Prepare data for downloads
@@ -349,8 +333,8 @@ def main():
         with col1:
             # CSV download of all data
             all_csv = all_data_df.to_csv(index=False)
-            st.download_button(
-                label="📊 Download All Data (CSV)",
+            st.sidebar.download_button(
+                label="📊 Download District Data (CSV)",
                 data=all_csv,
                 file_name=f"{filename_prefix}_all_data.csv",
                 mime="text/csv",
@@ -359,45 +343,61 @@ def main():
         
         with col2:
             # HTML download of operations table
-            if st.button("📋 Generate Operations Report", help="Create formatted HTML report of operations data"):
+            if st.sidebar.button("📋 Generate Operations Report", help="Create formatted HTML report of operations data"):
                 with st.spinner("Generating Operations Report..."):
                     try:
                         operations_table, _ = create_formatted_tables(filtered_df, district_name)
                         
                         html_data = create_html_download(operations_table, f"{district_name} - Operations Report")
                         
-                        st.download_button(
+                        st.sidebar.download_button(
                             label="⬇️ Download Operations Report (HTML)",
                             data=html_data,
                             file_name=f"{filename_prefix}_operations.html",
                             mime="text/html"
                         )
-                        st.success("✅ Operations report ready for download! (You can print to PDF from your browser)")
+                        st.sidebar.success("✅ Operations report ready for download! (You can print to PDF from your browser)")
                     except Exception as e:
-                        st.error(f"Error generating report: {str(e)}")
+                        st.sidebar.error(f"Error generating report: {str(e)}")
         
         with col3:
             # HTML download of capital table
-            if st.button("🏗️ Generate Capital Report", help="Create formatted HTML report of capital needs data"):
-                with st.spinner("Generating Capital Report..."):
+            if st.sidebar.button("🏗️ Generate Capital Report", help="Create formatted HTML report of capital needs data"):
+                with st.sidebar.spinner("Generating Capital Report..."):
                     try:
                         _, capital_table = create_formatted_tables(filtered_df, district_name)
                         
                         html_data = create_html_download(capital_table, f"{district_name} - Capital Needs Report")
                         
-                        st.download_button(
+                        st.sidebar.download_button(
                             label="⬇️ Download Capital Report (HTML)",
                             data=html_data,
                             file_name=f"{filename_prefix}_capital.html",
                             mime="text/html"
                         )
-                        st.success("✅ Capital report ready for download! (You can print to PDF from your browser)")
+                        st.sidebar.success("✅ Capital report ready for download! (You can print to PDF from your browser)")
                     except Exception as e:
-                        st.error(f"Error generating report: {str(e
+                        st.sidebar.error(f"Error generating report: {str(e
                                  )}")
-        st.info("Select a district or legislator to enable downloads.")
+        st.sidebar.info("Select a district or legislator to enable downloads.")
     
-    st.markdown("---")
+     # Create display dataframe
+    display_df = filtered_df[display_columns].copy()
+    
+    display_df.columns = [
+        'School Name',
+        'Immediate (within 5 years)',
+        'Total Capital Needs', 
+        'FY25 Budget',
+        'Budget Cut (7%)',
+        'Budget Cut (15%)',
+        'Total Positions',
+        'Position Loss (7%)',
+        'Position Loss (15%)',
+        'SPED Positions',
+        'SPED Loss (7%)',
+        'SPED Loss (15%)'
+    ]   
 
     # Create tabs for data display
     tab1, tab2 = st.tabs(["💰 Capital Needs", "🏢 Operations & Positions"])
