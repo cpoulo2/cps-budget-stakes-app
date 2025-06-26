@@ -282,31 +282,8 @@ def main():
             # Test CSS - this should make ALL text red if CSS is working
             st.markdown("""
             <style>
-            /* Try multiple selectors for headers */
-            .stDataFrame table thead th,
-            .stDataFrame table th,
-            div[data-testid="stDataFrame"] th,
-            div[data-testid="stDataFrame"] thead th,
-            table thead th,
-            th {
-                background-color: white !important;
+            * {
                 font-weight: bold !important;
-                text-align: center !important;
-                color: black !important;
-            }
-            
-            /* Center numeric columns */
-            .stDataFrame table td:not(:first-child),
-            div[data-testid="stDataFrame"] td:not(:first-child),
-            table td:not(:first-child) {
-                text-align: center !important;
-            }
-            
-            /* Left align first column */
-            .stDataFrame table td:first-child,
-            div[data-testid="stDataFrame"] td:first-child,
-            table td:first-child {
-                text-align: left !important;
             }
             </style>
             """, unsafe_allow_html=True)
