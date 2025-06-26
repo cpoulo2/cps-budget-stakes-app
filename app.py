@@ -273,14 +273,12 @@ def main():
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
-                    max-height: 400px;
-                    overflow-y: auto;
-                    display: block;
                 }
                 .custom-table-capital thead {
                     position: sticky;
                     top: 0;
                     z-index: 10;
+                    background-color: white;
                 }
                 .custom-table-capital th {
                     background-color: white !important;
@@ -292,18 +290,10 @@ def main():
                     position: sticky;
                     top: 0;
                 }
-                .custom-table-capital tbody {
-                    display: table;
-                    width: 100%;
-                }
-                .custom-table-capital tr {
-                    display: table-row;
-                }
                 .custom-table-capital td {
                     padding: 8px 10px;
                     border: 1px solid #ddd;
                     text-align: center;
-                    display: table-cell;
                 }
                 .custom-table-capital td:first-child {
                     text-align: left;
