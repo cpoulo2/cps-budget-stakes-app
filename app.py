@@ -484,7 +484,7 @@ def main():
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
-                    margin: 0 auto;
+                    margin: 0 auto; !important;  /* Changed from "margin: 0 auto;" */
                 }
                 .custom-table-capital thead {
                     position: sticky;
@@ -622,7 +622,7 @@ def main():
                     width: 100%;
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
-                    margin: 0 auto;
+                    margin: 0 !important;  /* Changed from "margin: 0 auto;" */
                 }
                 .custom-table thead {
                     position: sticky;
