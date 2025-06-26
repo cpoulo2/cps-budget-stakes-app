@@ -2,14 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# Configure page
-st.set_page_config(
-    page_title="CPS Budget Stakes Dashboard",
-    page_icon="🏫",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
 # Load data
 @st.cache_data
 def load_data():
@@ -25,6 +17,27 @@ def load_data():
 def main():
     st.title("🏫 CPS Budget Stakes Dashboard")
     st.markdown("**Filter schools by legislative district to view capital needs and the impact of budget cuts**")
+    
+    # Force light mode
+    st.markdown("""
+    <style>
+    .stApp {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Force all text to be black */
+    .stMarkdown, .stText, .stCaption, .stSubheader, .stHeader, .stTitle {
+        color: black !important;
+    }
+    
+    /* Ensure sidebar is also light */
+    .css-1d391kg {
+        background-color: #f0f2f6 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)    
+    
     
     # Load data
     df = load_data()
