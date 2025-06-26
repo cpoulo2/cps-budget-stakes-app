@@ -338,8 +338,10 @@ def main():
             district_name = f"{selected_chamber} District {selected_district}"
             filename_prefix = f"{selected_chamber.replace(' ', '_')}_District_{selected_district}"
         else:
-            district_name = f"{selected_legislator}"
-            filename_prefix = f"{selected_legislator.replace(' ', '_').replace('.', '')}"
+            # Get chamber and district info from filtered data
+            legislator_info = filtered_df.iloc[0]
+            district_name = f"{legislator_info['Chamber']} District {legislator_info['District']}"
+            filename_prefix = f"{legislator_info['Chamber'].replace(' ', '_')}_District_{legislator_info['District']}"
         
         # Create 3 columns for download buttons
         col1, col2, col3 = st.columns(3)
