@@ -449,6 +449,12 @@ def main():
                     font-family: 'Source Sans Pro', sans-serif;
                     font-size: 14px;
                 }
+                .custom-table thead {
+                    position: sticky;
+                    top: 0;
+                    z-index: 10;
+                    background-color: white;
+                }
                 .custom-table th {
                     background-color: white !important;
                     font-weight: bold !important;
@@ -456,6 +462,8 @@ def main():
                     padding: 10px;
                     border: 1px solid #ddd;
                     color: black !important;
+                    position: sticky;
+                    top: 0;
                 }
                 .custom-table td {
                     padding: 8px 10px;
@@ -474,6 +482,7 @@ def main():
                     font-weight: bold;
                 }
                 </style>
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd;">
                 <table class="custom-table">
                 <thead><tr>
                 """
