@@ -148,7 +148,8 @@ def main():
     st.title("🏫 CPS Budget Stakes Dashboard")
     st.markdown("**Filter schools by legislative district to view capital needs and the impact of budget cuts**")
  
-    # Force light mode
+ # Replace your entire st.markdown CSS block with this:
+
     st.markdown("""
     <style>
     .stApp {
@@ -352,37 +353,37 @@ def main():
         border: 1px solid #ddd !important;
     }
     
-        /* Fix selectbox and other form elements */
+    /* Fix selectbox and other form elements */
     .stSelectbox > div > div {
         background-color: white !important;
         color: black !important;
     }
     
-    /* Fix radio buttons background */
+    /* Fix radio buttons background - MAKE WHITE */
     .stRadio > div {
-        background-color: #f0f2f6 !important;
+        background-color: white !important;
         color: black !important;
     }
     
-    /* Fix radio button labels */
+    /* Fix radio button labels - MAKE WHITE */
     .stRadio > div > label {
-        background-color: #f0f2f6 !important;
+        background-color: white !important;
         color: black !important;
     }
     
-    /* Fix radio button options container */
+    /* Fix radio button options container - MAKE WHITE */
     .stRadio > div > div {
-        background-color: #f0f2f6 !important;
+        background-color: white !important;
     }
     
-    /* Fix sidebar radio buttons specifically */
+    /* Fix sidebar radio buttons specifically - MAKE WHITE */
     .stSidebar .stRadio > div {
-        background-color: #f0f2f6 !important;
+        background-color: white !important;
         color: black !important;
     }
     
     .stSidebar .stRadio > div > label {
-        background-color: #f0f2f6 !important;
+        background-color: white !important;
         color: black !important;
     }
     
@@ -429,33 +430,8 @@ def main():
         border: 1px solid #ddd !important;
     }
     
-    # Add this CSS right after line 430 (after your existing CSS but before the </style> tag):
-
-    /* Fix radio buttons background - MAKE WHITE */
-    .stRadio > div {
-        background-color: white !important;
-        color: black !important;
-    }
-    
-    /* Fix radio button labels - MAKE WHITE */
-    .stRadio > div > label {
-        background-color: white !important;
-        color: black !important;
-    }
-    
-    /* Fix radio button options container - MAKE WHITE */
-    .stRadio > div > div {
-        background-color: white !important;
-    }
-    
-    /* Fix sidebar radio buttons specifically - MAKE WHITE */
-    .stSidebar .stRadio > div {
-        background-color: white !important;
-        color: black !important;
-    }
-    
-    .stSidebar .stRadio > div > label {
-        background-color: white !important;
+    section[data-testid="stSidebar"] button:hover {
+        background-color: #f0f2f6 !important;
         color: black !important;
     }
     
@@ -491,11 +467,6 @@ def main():
     }
     
     .st-emotion-cache-1v0mbdj:hover {
-        background-color: #f0f2f6 !important;
-        color: black !important;
-    }
-    
-    section[data-testid="stSidebar"] button:hover {
         background-color: #f0f2f6 !important;
         color: black !important;
     }
