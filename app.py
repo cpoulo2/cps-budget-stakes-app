@@ -1092,6 +1092,7 @@ def main():
                     html_content = operations_table._repr_html_()
                     
                     # Create complete HTML document
+
                     full_html = f"""
                     <!DOCTYPE html>
                     <html>
@@ -1101,72 +1102,40 @@ def main():
                         <style>
                             body {{ 
                                 margin: 0; 
-                                padding: 15px; 
+                                padding: 20px; 
                                 font-family: Arial, sans-serif; 
                                 background-color: white;
                                 color: black;
                             }}
                             table {{ 
-                                page-break-inside: auto; 
+                                page-break-inside: avoid; 
                                 width: 100%;
                             }}
                             @media print {{
-                                body {{ 
-                                    margin: 0.5in; 
-                                    -webkit-print-color-adjust: exact;
-                                    print-color-adjust: exact;
-                                }}
+                                body {{ margin: 0.5in; }}
                                 table {{ 
+                                    font-size: 10px; 
                                     width: 7.5in !important;
-                                    max-width: 7.5in !important;
-                                    font-size: 9px !important;
                                     table-layout: fixed;
-                                    page-break-inside: auto;
                                 }}
-                                /* Set specific column widths for large numbers */
-                                th, td {{
-                                    padding: 3px 1px !important;
-                                    font-size: 9px !important;
-                                    line-height: 1 !important;
-                                    word-wrap: break-word;
-                                    overflow: hidden;
-                                    text-overflow: ellipsis;
+                                /* Give budget columns more space for large numbers */
+                                th:nth-child(2), td:nth-child(2),
+                                th:nth-child(3), td:nth-child(3),
+                                th:nth-child(4), td:nth-child(4) {{
+                                    width: 16% !important;
                                 }}
-                                /* School name - narrower to give more space to numbers */
+                                /* Make school name column smaller */
                                 th:nth-child(1), td:nth-child(1) {{
-                                    width: 18% !important;
-                                    text-align: left !important;
-                                    font-size: 8px !important;
-                                }}
-                                /* Budget columns - wider for large dollar amounts */
-                                th:nth-child(2), td:nth-child(2),  /* FY25 Budget */
-                                th:nth-child(3), td:nth-child(3),  /* 7% Cut */
-                                th:nth-child(4), td:nth-child(4) {{ /* 15% Cut */
                                     width: 15% !important;
-                                    font-size: 8px !important;
-                                    padding: 3px 1px !important;
                                 }}
-                                /* Position columns - smaller but adequate */
-                                th:nth-child(5), td:nth-child(5),  /* Positions */
-                                th:nth-child(6), td:nth-child(6),  /* 7% Cut */
-                                th:nth-child(7), td:nth-child(7) {{ /* 15% Cut */
-                                    width: 7% !important;
-                                    font-size: 8px !important;
-                                }}
-                                /* SPED columns - smaller but adequate */
-                                th:nth-child(8), td:nth-child(8),  /* SPED Positions */
-                                th:nth-child(9), td:nth-child(9),  /* 7% Cut */
-                                th:nth-child(10), td:nth-child(10) {{ /* 15% Cut */
-                                    width: 7% !important;
-                                    font-size: 8px !important;
-                                }}
-                                /* Allow table rows to break across pages */
-                                tr {{
-                                    page-break-inside: avoid;
-                                }}
-                                /* Keep header on each page */
-                                thead {{
-                                    display: table-header-group;
+                                /* Position and SPED columns */
+                                th:nth-child(5), td:nth-child(5),
+                                th:nth-child(6), td:nth-child(6),
+                                th:nth-child(7), td:nth-child(7),
+                                th:nth-child(8), td:nth-child(8),
+                                th:nth-child(9), td:nth-child(9),
+                                th:nth-child(10), td:nth-child(10) {{
+                                    width: 8.5% !important;
                                 }}
                                 @page {{
                                     size: letter portrait;
