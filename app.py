@@ -366,8 +366,8 @@ def main():
     
     /* TARGET METRIC VALUES SPECIFICALLY */
     [data-testid="stMetricValue"] {
-        font-size: 2.3rem !important;
-        font-weight: 700 !important;
+        font-size: 1.3rem !important;
+        font-weight: 500 !important;
         color: black !important;
     }
     
