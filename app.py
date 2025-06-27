@@ -269,7 +269,7 @@ def main():
         background-color: #f0f2f6 !important;
     }
     
-    /* FIX MOBILE SIDEBAR BACKGROUND */
+    /* FIX MOBILE SIDEBAR BACKGROUND AND TEXT */
     .stSidebar {
         background-color: #f0f2f6 !important;
     }
@@ -290,12 +290,38 @@ def main():
         background-color: #f0f2f6 !important;
     }
     
+    /* FIX SIDEBAR TEXT COLOR */
     .stSidebar .stMarkdown {
         background-color: #f0f2f6 !important;
         color: black !important;
     }
+    
+    .stSidebar .stMarkdown p {
+        color: black !important;
+    }
+    
+    .stSidebar .stMarkdown h1, 
+    .stSidebar .stMarkdown h2, 
+    .stSidebar .stMarkdown h3, 
+    .stSidebar .stMarkdown h4 {
+        color: black !important;
+    }
+    
+    /* Fix sidebar selectbox text */
+    .stSidebar .stSelectbox label {
+        color: black !important;
+    }
+    
+    .stSidebar .stRadio label {
+        color: black !important;
+    }
+    
+    /* Fix sidebar info/success messages */
+    .stSidebar .element-container div {
+        color: black !important;
+    }
        
-    /* Fix download buttons and other buttons */
+    /* FIX DOWNLOAD AND REGULAR BUTTONS - White background, black text */
     .stDownloadButton > button {
         background-color: white !important;
         color: black !important;
@@ -303,6 +329,41 @@ def main():
     }
     
     .stDownloadButton > button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Fix all button types - White background, black text */
+    .stButton > button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .stButton > button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Fix sidebar buttons specifically */
+    .stSidebar .stButton > button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .stSidebar .stButton > button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    .stSidebar .stDownloadButton > button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .stSidebar .stDownloadButton > button:hover {
         background-color: #f0f2f6 !important;
         color: black !important;
     }
