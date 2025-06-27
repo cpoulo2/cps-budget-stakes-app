@@ -353,7 +353,7 @@ def main():
         border: 1px solid #ddd !important;
     }
     
-    /* Fix radio buttons background - Container light gray, toggles white */
+        /* Fix radio buttons background - Container light gray */
     .stRadio > div {
         background-color: #f0f2f6 !important;
         color: black !important;
@@ -389,12 +389,6 @@ def main():
     /* Fix sidebar radio button circles - White */
     .stSidebar .stRadio input[type="radio"] {
         background-color: white !important;
-    }
-    
-    /* Fix sidebar radio buttons specifically - MAKE WHITE */
-    .stSidebar .stRadio > div {
-        background-color: white !important;
-        color: black !important;
     }
     
     .stSidebar .stRadio > div > label {
