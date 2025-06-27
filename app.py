@@ -357,27 +357,34 @@ def main():
         font-weight: 800 !important;
     }
     
-   /* TARGET METRIC LABELS SPECIFICALLY - COMPREHENSIVE */
-    [data-testid="stMetricLabel"] {
-        font-size: 2.1rem !important;
-        font-weight: 800 !important;
+        /* TARGET METRIC LABELS SPECIFICALLY - EXACT STRUCTURE */
+    [data-testid="stMetricLabel"] p {
+        font-size: 2.5rem !important;
+        font-weight: 900 !important;
         color: black !important;
     }
     
-    /* Alternative metric label selectors */
-    .stMetric > div > div:first-child {
-        font-size: 2.1rem !important;
-        font-weight: 800 !important;
+    /* Target the markdown container inside metric labels */
+    [data-testid="stMetricLabel"] [data-testid="stMarkdownContainer"] p {
+        font-size: 2.5rem !important;
+        font-weight: 900 !important;
         color: black !important;
     }
     
-    /* Nuclear option for metric labels */
-    [data-testid="metric-container"] > div:first-child,
-    [data-testid="metric-container"] label,
-    .stMetric label {
-        font-size: 2.1rem !important;
-        font-weight: 800 !important;
+    /* Nuclear option for metric label paragraphs */
+    label[data-testid="stMetricLabel"] p,
+    .st-emotion-cache-15jn9ue p,
+    .st-emotion-cache-bfgnao p {
+        font-size: 2.5rem !important;
+        font-weight: 900 !important;
         color: black !important;
+    }
+    
+    /* Ensure metric values stay large */
+    [data-testid="metric-container"] div[data-testid="metric-value"],
+    .stMetric [data-testid="metric-value"] {
+        font-size: 2.8rem !important;
+        font-weight: 800 !important;
     }
     
     /* Target metric text content directly */
