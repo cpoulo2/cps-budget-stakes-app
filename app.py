@@ -1108,6 +1108,7 @@ def main():
                     html_content = operations_table._repr_html_()
                     
                     # Create complete HTML document
+
                     full_html = f"""
                     <!DOCTYPE html>
                     <html>
@@ -1121,7 +1122,7 @@ def main():
                                 font-family: Arial, sans-serif; 
                                 background-color: white;
                                 color: black;
-                                font-size: 10px;
+                                font-size: 9px;
                             }}
                             table {{ 
                                 page-break-inside: avoid; 
@@ -1131,30 +1132,39 @@ def main():
                             }}
                             th, td {{
                                 border: 1px solid #ddd;
-                                padding: 4px 2px;
+                                padding: 3px 1px;
                                 text-align: center;
                                 word-wrap: break-word;
                                 overflow-wrap: break-word;
-                                font-size: 9px;
+                                font-size: 8px;
+                                line-height: 1;
                             }}
                             th {{
                                 background-color: #f2f2f2;
                                 font-weight: bold;
-                                font-size: 8px;
-                                line-height: 1.1;
+                                font-size: 7px;
+                                line-height: 1;
+                                padding: 2px 1px;
                             }}
                             td:first-child {{
                                 text-align: left;
-                                width: 25%;
+                                width: 20%;
+                                font-size: 7px;
                             }}
+                            /* Budget columns - slightly wider */
                             td:nth-child(2), td:nth-child(3), td:nth-child(4) {{
-                                width: 12%;  /* Budget columns */
+                                width: 11%;
+                                font-size: 7px;
                             }}
+                            /* Position columns - narrower */
                             td:nth-child(5), td:nth-child(6), td:nth-child(7) {{
-                                width: 8%;   /* Position columns */
+                                width: 7%;
+                                font-size: 7px;
                             }}
+                            /* SPED columns - narrower */
                             td:nth-child(8), td:nth-child(9), td:nth-child(10) {{
-                                width: 8%;   /* SPED columns */
+                                width: 7%;
+                                font-size: 7px;
                             }}
                             .cut-column {{
                                 color: red !important;
@@ -1166,32 +1176,40 @@ def main():
                             }}
                             @media print {{
                                 body {{ 
-                                    margin: 0.3in !important; 
+                                    margin: 0.25in !important; 
                                     padding: 0 !important;
-                                    font-size: 8px !important;
+                                    font-size: 7px !important;
                                 }}
                                 table {{ 
-                                    font-size: 7px !important;
+                                    font-size: 6px !important;
                                     width: 100% !important;
                                 }}
                                 th, td {{
-                                    padding: 2px 1px !important;
-                                    font-size: 7px !important;
+                                    padding: 1px !important;
+                                    font-size: 6px !important;
                                     line-height: 1;
                                 }}
                                 th {{
-                                    font-size: 6px !important;
+                                    font-size: 5px !important;
+                                }}
+                                td:first-child {{
+                                    font-size: 5px !important;
+                                }}
+                                td:nth-child(2), td:nth-child(3), td:nth-child(4),
+                                td:nth-child(5), td:nth-child(6), td:nth-child(7),
+                                td:nth-child(8), td:nth-child(9), td:nth-child(10) {{
+                                    font-size: 5px !important;
                                 }}
                             }}
                             @page {{
-                                size: letter landscape;
-                                margin: 0.3in;
+                                size: letter portrait;
+                                margin: 0.25in;
                             }}
                         </style>
                     </head>
                     <body>
                         {html_content}
-                        <div style="margin-top: 15px; font-size: 8px; color: #666;">
+                        <div style="margin-top: 10px; font-size: 6px; color: #666;">
                             Report generated on {pd.Timestamp.now().strftime('%B %d, %Y at %I:%M %p')}
                         </div>
                     </body>
