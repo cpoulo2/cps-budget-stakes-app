@@ -359,15 +359,15 @@ def main():
     
         /* TARGET METRIC LABELS SPECIFICALLY - EXACT STRUCTURE */
     [data-testid="stMetricLabel"] p {
-        font-size: 2rem !important;
-        font-weight: 800 !important;
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
         color: black !important;
     }
     
     /* Target the markdown container inside metric labels */
     [data-testid="stMetricLabel"] [data-testid="stMarkdownContainer"] p {
-        font-size: 2rem !important;
-        font-weight: 800 !important;
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
         color: black !important;
     }
     
@@ -375,8 +375,8 @@ def main():
     label[data-testid="stMetricLabel"] p,
     .st-emotion-cache-15jn9ue p,
     .st-emotion-cache-bfgnao p {
-        font-size: 2rem !important;
-        font-weight: 800 !important;
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
         color: black !important;
     }
     
