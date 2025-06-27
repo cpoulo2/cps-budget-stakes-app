@@ -6,155 +6,9 @@ import numpy as np
 import polars as pl
 from great_tables import GT, loc, style
 
-import base64
-import os
-import tempfile
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 # Replace the generate_pdf_from_html function with this improved version:
 
-def generate_pdf_from_html(html_content, filename_prefix):
-    """Generate PDF from HTML content using selenium - Cloud compatible with fallback"""
-    
-    try:
-        # Set up Chrome options for cloud deployment
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--disable-web-security")
-        chrome_options.add_argument("--allow-running-insecure-content")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-plugins")
-        chrome_options.add_argument("--disable-images")
-        chrome_options.add_argument("--remote-debugging-port=9222")
-        chrome_options.add_argument("--single-process")
-        chrome_options.add_argument("--disable-background-timer-throttling")
-        chrome_options.add_argument("--disable-renderer-backgrounding")
-        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-        
-        # Try different Chrome binary locations
-        possible_chrome_paths = [
-            "/usr/bin/chromium",
-            "/usr/bin/chromium-browser", 
-            "/usr/bin/google-chrome",
-            "/usr/bin/google-chrome-stable"
-        ]
-        
-        chrome_binary_found = False
-        for path in possible_chrome_paths:
-            if os.path.exists(path):
-                chrome_options.binary_location = path
-                chrome_binary_found = True
-                break
-        
-        if not chrome_binary_found:
-            st.error("Chrome browser not found. PDF generation unavailable.")
-            return None
-        
-        # Create temporary HTML file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False, encoding='utf-8') as f:
-            f.write(f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <style>
-                    body {{ 
-                        margin: 0; 
-                        padding: 20px; 
-                        font-family: Arial, sans-serif; 
-                        background-color: white;
-                        color: black;
-                        font-size: 12px;
-                    }}
-                    table {{ 
-                        border-collapse: collapse;
-                        width: 100%;
-                        font-size: 10px;
-                    }}
-                    th, td {{
-                        border: 1px solid #ddd;
-                        padding: 4px;
-                        text-align: left;
-                    }}
-                    th {{
-                        background-color: #f2f2f2;
-                        font-weight: bold;
-                    }}
-                    .metric {{
-                        font-size: 12px;
-                        margin-bottom: 8px;
-                        font-weight: bold;
-                    }}
-                    h1 {{
-                        color: black;
-                        font-size: 16px;
-                        margin-bottom: 10px;
-                    }}
-                </style>
-            </head>
-            <body>
-                {html_content}
-            </body>
-            </html>
-            """)
-            html_filename = f.name
-        
-        # Try to create webdriver
-        try:
-            service = Service(ChromeDriverManager().install())
-            driver = webdriver.Chrome(service=service, options=chrome_options)
-        except Exception as e:
-            st.error(f"Failed to start Chrome driver: {e}")
-            return None
-        
-        try:
-            # Load the HTML file
-            driver.get(f"file://{html_filename}")
-            
-            # Wait for content to load
-            import time
-            time.sleep(2)
-            
-            # Print to PDF with simplified settings
-            pdf_options = {
-                'landscape': False,
-                'displayHeaderFooter': False,
-                'printBackground': True,
-                'paperWidth': 8.5,
-                'paperHeight': 11,
-                'marginTop': 0.5,
-                'marginBottom': 0.5,
-                'marginLeft': 0.5,
-                'marginRight': 0.5,
-                'scale': 0.8
-            }
-            
-            result = driver.execute_cdp_cmd("Page.printToPDF", pdf_options)
-            
-            if 'data' not in result:
-                st.error("PDF generation failed - no data returned")
-                return None
-                
-            pdf_bytes = base64.b64decode(result['data'])
-            return pdf_bytes
-            
-        finally:
-            driver.quit()
-            
-    except Exception as e:
-        st.error(f"PDF generation error: {e}")
-        return None
-        
-    finally:
-        # Clean up HTML file
-        if 'html_filename' in locals() and os.path.exists(html_filename):
-            os.remove(html_filename)
 
 # PDF generation function
 def create_html_download(table, title):
@@ -1046,64 +900,296 @@ def main():
         
 # Replace the download button sections with better error handling:
 
-        if st.sidebar.button("📊 Generate Capital Report", help="Create formatted PDF report of capital needs data"):
+        if st.sidebar.button("📊 Generate Capital Report", help="Create formatted HTML report of capital needs data"):
             with st.spinner("Generating Capital Report..."):
                 try:
-                    # Create summary metrics HTML
-                    summary_html = f"""
-                    <h1>Capital Needs Report - {filename_prefix}</h1>
-                    <div class="metric"><strong>Schools:</strong> {len(filtered_df)}</div>
-                    <div class="metric"><strong>Total Immediate Capital Needs:</strong> ${filtered_df['Immediate Capital Needs'].sum():,.0f}</div>
-                    <div class="metric"><strong>Total Capital Needs:</strong> ${filtered_df['Total Capital Needs'].sum():,.0f}</div>
-                    <br>
-                    """
+                    # Create summary metrics
+                    summary_stats = {
+                        'Total Schools': len(filtered_df),
+                        'Total Immediate Capital Needs': f"${filtered_df['Immediate Capital Needs'].sum():,.0f}",
+                        'Total Capital Needs': f"${filtered_df['Total Capital Needs'].sum():,.0f}"
+                    }
                     
-                    # Add the dataframe as HTML table
+                    # Create formatted dataframe
                     capital_df = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']].copy()
                     capital_df['Immediate Capital Needs'] = capital_df['Immediate Capital Needs'].apply(lambda x: f"${x:,.0f}")
                     capital_df['Total Capital Needs'] = capital_df['Total Capital Needs'].apply(lambda x: f"${x:,.0f}")
                     
-                    table_html = capital_df.to_html(index=False, escape=False)
-                    full_html = summary_html + table_html
+                    # Create HTML report
+                    html_report = f"""
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="utf-8">
+                        <title>Capital Needs Report - {filename_prefix}</title>
+                        <style>
+                            body {{ 
+                                font-family: Arial, sans-serif; 
+                                margin: 20px; 
+                                background-color: white;
+                                color: black;
+                            }}
+                            .header {{ 
+                                text-align: center; 
+                                margin-bottom: 30px; 
+                                border-bottom: 2px solid #333;
+                                padding-bottom: 15px;
+                            }}
+                            .metrics {{ 
+                                display: flex; 
+                                justify-content: space-around; 
+                                margin-bottom: 30px;
+                                background-color: #f5f5f5;
+                                padding: 15px;
+                                border-radius: 5px;
+                            }}
+                            .metric {{ 
+                                text-align: center; 
+                            }}
+                            .metric-value {{ 
+                                font-size: 24px; 
+                                font-weight: bold; 
+                                color: #2E86AB;
+                            }}
+                            table {{ 
+                                border-collapse: collapse; 
+                                width: 100%; 
+                                margin-top: 20px;
+                            }}
+                            th, td {{ 
+                                border: 1px solid #ddd; 
+                                padding: 12px; 
+                                text-align: left; 
+                            }}
+                            th {{ 
+                                background-color: #f2f2f2; 
+                                font-weight: bold;
+                                text-align: center;
+                            }}
+                            td:nth-child(2), td:nth-child(3) {{ 
+                                text-align: right; 
+                            }}
+                            tr:nth-child(even) {{ 
+                                background-color: #f9f9f9; 
+                            }}
+                            @media print {{
+                                body {{ margin: 0.5in; }}
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Capital Needs Report</h1>
+                            <h2>{district_name}</h2>
+                        </div>
+                        
+                        <div class="metrics">
+                            <div class="metric">
+                                <div>Total Schools</div>
+                                <div class="metric-value">{summary_stats['Total Schools']}</div>
+                            </div>
+                            <div class="metric">
+                                <div>Immediate Capital Needs</div>
+                                <div class="metric-value">{summary_stats['Total Immediate Capital Needs']}</div>
+                            </div>
+                            <div class="metric">
+                                <div>Total Capital Needs</div>
+                                <div class="metric-value">{summary_stats['Total Capital Needs']}</div>
+                            </div>
+                        </div>
+                        
+                        {capital_df.to_html(index=False, escape=False, table_id="capital-table")}
+                        
+                        <div style="margin-top: 30px; font-size: 12px; color: #666;">
+                            Report generated on {pd.Timestamp.now().strftime('%B %d, %Y at %I:%M %p')}
+                        </div>
+                    </body>
+                    </html>
+                    """
                     
-                    # Generate PDF
-                    pdf_data = generate_pdf_from_html(full_html, filename_prefix)
+                    # Create download button for HTML
+                    st.sidebar.download_button(
+                        label="⬇️ Download Capital Report (HTML)",
+                        data=html_report.encode('utf-8'),
+                        file_name=f"{filename_prefix}_capital_report.html",
+                        mime="text/html",
+                        help="Download as HTML file (can be printed to PDF from browser)"
+                    )
                     
-                    if pdf_data is not None and len(pdf_data) > 0:
-                        # Create download button
-                        st.sidebar.download_button(
-                            label="⬇️ Download Capital Report (PDF)",
-                            data=pdf_data,
-                            file_name=f"{filename_prefix}_capital.pdf",
-                            mime="application/pdf"
-                        )
-                        st.sidebar.success("✅ Capital report generated successfully!")
-                    else:
-                        st.sidebar.error("❌ PDF generation failed. Falling back to CSV download.")
-                        # Fallback to CSV
-                        csv_data = capital_df.to_csv(index=False)
-                        st.sidebar.download_button(
-                            label="⬇️ Download Capital Report (CSV)",
-                            data=csv_data,
-                            file_name=f"{filename_prefix}_capital.csv",
-                            mime="text/csv"
-                        )
+                    # Also provide CSV option
+                    csv_data = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']].to_csv(index=False)
+                    st.sidebar.download_button(
+                        label="📊 Download Capital Data (CSV)",
+                        data=csv_data,
+                        file_name=f"{filename_prefix}_capital.csv",
+                        mime="text/csv"
+                    )
+                    
+                    st.sidebar.success("✅ Capital report generated successfully!")
+                    st.sidebar.info("💡 Tip: Open the HTML file in your browser and use 'Print to PDF' for a PDF version")
 
                 except Exception as e:
                     st.sidebar.error(f"❌ Error generating report: {str(e)}")
-                    # Provide CSV fallback
+                    # Fallback to CSV only
                     try:
-                        capital_df = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']]
-                        csv_data = capital_df.to_csv(index=False)
+                        csv_data = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']].to_csv(index=False)
                         st.sidebar.download_button(
-                            label="⬇️ Download Capital Report (CSV - Fallback)",
+                            label="📊 Download Capital Data (CSV)",
                             data=csv_data,
                             file_name=f"{filename_prefix}_capital.csv",
                             mime="text/csv"
                         )
-                        st.sidebar.info("ℹ️ PDF generation failed, but CSV download is available.")
                     except:
-                        st.sidebar.error("❌ Both PDF and CSV generation failed.")
+                        st.sidebar.error("❌ All report generation failed.")
+
+        if st.sidebar.button("📋 Generate Operations Report", help="Create formatted HTML report of operations data"):
+            with st.spinner("Generating Operations Report..."):
+                try:
+                    # Create summary metrics
+                    summary_stats = {
+                        'Total Schools': len(filtered_df),
+                        'Total FY25 Budget': f"${filtered_df['Operational Budget FY25'].sum():,.0f}",
+                        'Total Positions': f"{filtered_df['Positions'].sum():.1f}",
+                        'Total SPED Positions': f"{filtered_df['SPED Positions'].sum():.1f}"
+                    }
+                    
+                    # Create formatted dataframe
+                    ops_df = filtered_df[['School Name', 'Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut', 
+                                         'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
+                                         'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']].copy()
+                    
+                    # Format currency columns
+                    for col in ['Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut']:
+                        ops_df[col] = ops_df[col].apply(lambda x: f"${x:,.0f}")
+                    
+                    # Format position columns
+                    for col in ['Positions', 'Positions 7% Cut', 'Positions 15% Cut', 'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']:
+                        ops_df[col] = ops_df[col].apply(lambda x: f"{x:.1f}")
+                    
+                    # Create HTML report
+                    html_report = f"""
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="utf-8">
+                        <title>Operations Report - {filename_prefix}</title>
+                        <style>
+                            body {{ 
+                                font-family: Arial, sans-serif; 
+                                margin: 20px; 
+                                background-color: white;
+                                color: black;
+                            }}
+                            .header {{ 
+                                text-align: center; 
+                                margin-bottom: 30px; 
+                                border-bottom: 2px solid #333;
+                                padding-bottom: 15px;
+                            }}
+                            .metrics {{ 
+                                display: flex; 
+                                justify-content: space-around; 
+                                margin-bottom: 30px;
+                                background-color: #f5f5f5;
+                                padding: 15px;
+                                border-radius: 5px;
+                            }}
+                            .metric {{ 
+                                text-align: center; 
+                            }}
+                            .metric-value {{ 
+                                font-size: 20px; 
+                                font-weight: bold; 
+                                color: #2E86AB;
+                            }}
+                            table {{ 
+                                border-collapse: collapse; 
+                                width: 100%; 
+                                margin-top: 20px;
+                                font-size: 12px;
+                            }}
+                            th, td {{ 
+                                border: 1px solid #ddd; 
+                                padding: 8px; 
+                                text-align: center; 
+                            }}
+                            th {{ 
+                                background-color: #f2f2f2; 
+                                font-weight: bold;
+                            }}
+                            td:first-child {{ 
+                                text-align: left; 
+                            }}
+                            .cut-column {{ 
+                                color: red; 
+                                font-weight: bold; 
+                            }}
+                            tr:nth-child(even) {{ 
+                                background-color: #f9f9f9; 
+                            }}
+                            @media print {{
+                                body {{ margin: 0.5in; }}
+                                table {{ font-size: 10px; }}
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Operations & Budget Impact Report</h1>
+                            <h2>{district_name}</h2>
+                        </div>
+                        
+                        <div class="metrics">
+                            <div class="metric">
+                                <div>Total Schools</div>
+                                <div class="metric-value">{summary_stats['Total Schools']}</div>
+                            </div>
+                            <div class="metric">
+                                <div>Total FY25 Budget</div>
+                                <div class="metric-value">{summary_stats['Total FY25 Budget']}</div>
+                            </div>
+                            <div class="metric">
+                                <div>Total Positions</div>
+                                <div class="metric-value">{summary_stats['Total Positions']}</div>
+                            </div>
+                            <div class="metric">
+                                <div>SPED Positions</div>
+                                <div class="metric-value">{summary_stats['Total SPED Positions']}</div>
+                            </div>
+                        </div>
+                        
+                        {ops_df.to_html(index=False, escape=False, table_id="operations-table")}
+                        
+                        <div style="margin-top: 30px; font-size: 12px; color: #666;">
+                            Report generated on {pd.Timestamp.now().strftime('%B %d, %Y at %I:%M %p')}
+                        </div>
+                    </body>
+                    </html>
+                    """
+                    
+                    # Create download button for HTML
+                    st.sidebar.download_button(
+                        label="⬇️ Download Operations Report (HTML)",
+                        data=html_report.encode('utf-8'),
+                        file_name=f"{filename_prefix}_operations_report.html",
+                        mime="text/html",
+                        help="Download as HTML file (can be printed to PDF from browser)"
+                    )
+                    
+                    # Also provide CSV option
+                    csv_data = ops_df.to_csv(index=False)
+                    st.sidebar.download_button(
+                        label="📋 Download Operations Data (CSV)",
+                        data=csv_data,
+                        file_name=f"{filename_prefix}_operations.csv",
+                        mime="text/csv"
+                    )
+                    
+                    st.sidebar.success("✅ Operations report generated successfully!")
+                    st.sidebar.info("💡 Tip: Open the HTML file in your browser and use 'Print to PDF' for a PDF version")
+
+                except Exception as e:
+                    st.sidebar.error(f"❌ Error generating report: {str(e)}")
     
     # Create display dataframe
     display_df = filtered_df[display_columns].copy()
