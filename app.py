@@ -14,122 +14,146 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
+# Replace the generate_pdf_from_html function with this improved version:
+
 def generate_pdf_from_html(html_content, filename_prefix):
-    """Generate PDF from HTML content using selenium - Cloud compatible"""
-    
-    # Set up Chrome options for cloud deployment
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--disable-web-security")
-    chrome_options.add_argument("--allow-running-insecure-content")
-    chrome_options.add_argument("--disable-extensions")
-    chrome_options.add_argument("--disable-plugins")
-    chrome_options.add_argument("--disable-images")
-    chrome_options.add_argument("--disable-javascript")
-    chrome_options.add_argument("--virtual-time-budget=10000")
-    
-    # Try different Chrome binary locations for cloud deployment
-    chrome_options.binary_location = "/usr/bin/chromium"
-    
-    # PDF print settings
-    chrome_options.add_experimental_option("useAutomationExtension", False)
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    
-    # Create temporary HTML file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False, encoding='utf-8') as f:
-        f.write(f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                body {{ 
-                    margin: 0; 
-                    padding: 20px; 
-                    font-family: Arial, sans-serif; 
-                    background-color: white;
-                    color: black;
-                }}
-                table {{ 
-                    page-break-inside: avoid; 
-                    border-collapse: collapse;
-                    width: 100%;
-                    font-size: 12px;
-                }}
-                th, td {{
-                    border: 1px solid #ddd;
-                    padding: 6px;
-                    text-align: left;
-                }}
-                th {{
-                    background-color: #f2f2f2;
-                    font-weight: bold;
-                }}
-                .metric {{
-                    font-size: 14px;
-                    margin-bottom: 10px;
-                    font-weight: bold;
-                }}
-                h1 {{
-                    color: black;
-                    font-size: 18px;
-                }}
-            </style>
-        </head>
-        <body>
-            {html_content}
-        </body>
-        </html>
-        """)
-        html_filename = f.name
+    """Generate PDF from HTML content using selenium - Cloud compatible with fallback"""
     
     try:
-        # Use webdriver manager to handle driver installation
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        # Set up Chrome options for cloud deployment
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument("--allow-running-insecure-content")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-plugins")
+        chrome_options.add_argument("--disable-images")
+        chrome_options.add_argument("--remote-debugging-port=9222")
+        chrome_options.add_argument("--single-process")
+        chrome_options.add_argument("--disable-background-timer-throttling")
+        chrome_options.add_argument("--disable-renderer-backgrounding")
+        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
         
-        # Load the HTML file
-        driver.get(f"file://{html_filename}")
+        # Try different Chrome binary locations
+        possible_chrome_paths = [
+            "/usr/bin/chromium",
+            "/usr/bin/chromium-browser", 
+            "/usr/bin/google-chrome",
+            "/usr/bin/google-chrome-stable"
+        ]
         
-        # Wait for content to load
-        import time
-        time.sleep(3)
+        chrome_binary_found = False
+        for path in possible_chrome_paths:
+            if os.path.exists(path):
+                chrome_options.binary_location = path
+                chrome_binary_found = True
+                break
         
-        # Print to PDF with settings optimized for cloud
-        pdf_options = {
-            'landscape': False,
-            'displayHeaderFooter': False,
-            'printBackground': True,
-            'preferCSSPageSize': True,
-            'paperWidth': 8.5,
-            'paperHeight': 11,
-            'marginTop': 0.4,
-            'marginBottom': 0.4,
-            'marginLeft': 0.4,
-            'marginRight': 0.4,
-            'scale': 0.7
-        }
+        if not chrome_binary_found:
+            st.error("Chrome browser not found. PDF generation unavailable.")
+            return None
         
-        pdf_data = driver.execute_cdp_cmd("Page.printToPDF", pdf_options)
-        pdf_bytes = base64.b64decode(pdf_data['data'])
+        # Create temporary HTML file
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False, encoding='utf-8') as f:
+            f.write(f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body {{ 
+                        margin: 0; 
+                        padding: 20px; 
+                        font-family: Arial, sans-serif; 
+                        background-color: white;
+                        color: black;
+                        font-size: 12px;
+                    }}
+                    table {{ 
+                        border-collapse: collapse;
+                        width: 100%;
+                        font-size: 10px;
+                    }}
+                    th, td {{
+                        border: 1px solid #ddd;
+                        padding: 4px;
+                        text-align: left;
+                    }}
+                    th {{
+                        background-color: #f2f2f2;
+                        font-weight: bold;
+                    }}
+                    .metric {{
+                        font-size: 12px;
+                        margin-bottom: 8px;
+                        font-weight: bold;
+                    }}
+                    h1 {{
+                        color: black;
+                        font-size: 16px;
+                        margin-bottom: 10px;
+                    }}
+                </style>
+            </head>
+            <body>
+                {html_content}
+            </body>
+            </html>
+            """)
+            html_filename = f.name
         
-        return pdf_bytes
+        # Try to create webdriver
+        try:
+            service = Service(ChromeDriverManager().install())
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+        except Exception as e:
+            st.error(f"Failed to start Chrome driver: {e}")
+            return None
+        
+        try:
+            # Load the HTML file
+            driver.get(f"file://{html_filename}")
+            
+            # Wait for content to load
+            import time
+            time.sleep(2)
+            
+            # Print to PDF with simplified settings
+            pdf_options = {
+                'landscape': False,
+                'displayHeaderFooter': False,
+                'printBackground': True,
+                'paperWidth': 8.5,
+                'paperHeight': 11,
+                'marginTop': 0.5,
+                'marginBottom': 0.5,
+                'marginLeft': 0.5,
+                'marginRight': 0.5,
+                'scale': 0.8
+            }
+            
+            result = driver.execute_cdp_cmd("Page.printToPDF", pdf_options)
+            
+            if 'data' not in result:
+                st.error("PDF generation failed - no data returned")
+                return None
+                
+            pdf_bytes = base64.b64decode(result['data'])
+            return pdf_bytes
+            
+        finally:
+            driver.quit()
             
     except Exception as e:
-        # Fallback: if PDF generation fails, return None and handle gracefully
-        print(f"PDF generation failed: {e}")
+        st.error(f"PDF generation error: {e}")
         return None
         
     finally:
-        try:
-            driver.quit()
-        except:
-            pass
         # Clean up HTML file
-        if os.path.exists(html_filename):
+        if 'html_filename' in locals() and os.path.exists(html_filename):
             os.remove(html_filename)
 
 # PDF generation function
