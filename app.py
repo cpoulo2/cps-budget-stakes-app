@@ -1099,51 +1099,9 @@ def main():
                     <html>
                     <head>
                         <meta charset="utf-8">
-                        <title>Operations Report - {filename_prefix}</title>
                         <style>
-                            body {{ 
-                                margin: 0; 
-                                padding: 20px; 
-                                font-family: Arial, sans-serif; 
-                                background-color: white;
-                                color: black;
-                            }}
-                            table {{ 
-                                page-break-inside: avoid; 
-                                width: 100%;
-                            }}
-                            @media print {{
-                                body {{ margin: 0.3in; }}
-                                table {{ 
-                                    font-size: 8px; 
-                                    width: 7.9in !important;
-                                    max-width: 7.9in !important;
-                                    table-layout: fixed;
-                                }}
-                                /* Give budget columns EVEN MORE space for large numbers */
-                                th:nth-child(2), td:nth-child(2),
-                                th:nth-child(3), td:nth-child(3),
-                                th:nth-child(4), td:nth-child(4) {{
-                                    width: 22% !important;
-                                }}
-                                /* Make school name column smaller */
-                                th:nth-child(1), td:nth-child(1) {{
-                                    width: 8% !important;
-                                }}
-                                /* Position and SPED columns - smaller to make room */
-                                th:nth-child(5), td:nth-child(5),
-                                th:nth-child(6), td:nth-child(6),
-                                th:nth-child(7), td:nth-child(7),
-                                th:nth-child(8), td:nth-child(8),
-                                th:nth-child(9), td:nth-child(9),
-                                th:nth-child(10), td:nth-child(10) {{
-                                    width: 5% !important;
-                                }}
-                                @page {{
-                                    size: letter portrait;
-                                    margin: 0.3in;
-                                }}
-                            }}
+                            body {{ margin: 0; padding: 20px; font-family: Arial, sans-serif; }}
+                            table {{ page-break-inside: avoid; }}
                         </style>
                     </head>
                     <body>
