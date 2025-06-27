@@ -389,8 +389,8 @@ def main():
     
     /* Target metric text content directly */
     div[data-testid="metric-container"] div:first-child {
-        font-size: 2.1rem !important;
-        font-weight: 800 !important;
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
         color: black !important;
     }
     
