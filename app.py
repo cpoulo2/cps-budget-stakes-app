@@ -1086,16 +1086,23 @@ def main():
                                 page-break-inside: avoid; 
                             }}
                             @media print {{
-                                body {{ margin: 0.5in; }}
-                                table {{ font-size: 10px; }}
+                                body {{ 
+                                    margin: 0.5in; 
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                }}
+                                table {{ 
+                                    font-size: 10px; 
+                                    zoom: 0.8;
+                                }}
                                 @page {{
                                     size: letter portrait;
                                     margin: 0.5in;
                                 }}
                                 /* Force 80% scale for print */
                                 html {{
-                                    zoom: 0.9;
-                                    transform: scale(0.9);
+                                    zoom: 0.8;
+                                    transform: scale(0.8);
                                     transform-origin: top left;
                                 }}
                             }}
