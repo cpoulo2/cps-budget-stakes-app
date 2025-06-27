@@ -429,6 +429,72 @@ def main():
         border: 1px solid #ddd !important;
     }
     
+    # Add this CSS right after line 430 (after your existing CSS but before the </style> tag):
+
+    /* Fix radio buttons background - MAKE WHITE */
+    .stRadio > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Fix radio button labels - MAKE WHITE */
+    .stRadio > div > label {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Fix radio button options container - MAKE WHITE */
+    .stRadio > div > div {
+        background-color: white !important;
+    }
+    
+    /* Fix sidebar radio buttons specifically - MAKE WHITE */
+    .stSidebar .stRadio > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .stSidebar .stRadio > div > label {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* FIX SIDEBAR COLLAPSE BUTTON - MAKE WHITE */
+    .css-1v0mbdj {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .css-1v0mbdj:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Alternative sidebar button selectors */
+    [data-testid="collapsedControl"] {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    [data-testid="collapsedControl"]:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Sidebar toggle button */
+    .st-emotion-cache-1v0mbdj {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .st-emotion-cache-1v0mbdj:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
     section[data-testid="stSidebar"] button:hover {
         background-color: #f0f2f6 !important;
         color: black !important;
