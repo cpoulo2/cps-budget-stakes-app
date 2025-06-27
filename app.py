@@ -232,6 +232,59 @@ def main():
         color: black !important;
     }
     
+        /* Fix tab labels specifically */
+    .stTabs [data-baseweb="tab-list"] button {
+        color: black !important;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: black !important;
+        font-weight: bold !important;
+    }
+    
+    /* Fix subheaders in tabs */
+    .stTabs [data-baseweb="tab-panel"] h3 {
+        color: black !important;
+    }
+    
+    /* REMOVE TAB BORDERS ON MOBILE */
+    .stTabs [data-baseweb="tab-list"] {
+        border: none !important;
+        border-bottom: none !important;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] button {
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+    
+    .stTabs [data-baseweb="tab-panel"] {
+        border: none !important;
+        border-top: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Mobile specific tab border removal */
+    @media (max-width: 768px) {
+        .stTabs [data-baseweb="tab-list"] {
+            border: none !important;
+            outline: none !important;
+        }
+        
+        .stTabs [data-baseweb="tab-list"] button {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
+        .stTabs [data-baseweb="tab-panel"] {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    }
+    
     /* Force all headers to be black */
     h1, h2, h3, h4, h5, h6 {
         color: black !important;
