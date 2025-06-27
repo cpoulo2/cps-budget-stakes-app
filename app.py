@@ -1044,6 +1044,8 @@ def main():
             help="Download all capital and operations data as CSV"
         )
         
+# Replace the download button sections with better error handling:
+
         if st.sidebar.button("📊 Generate Capital Report", help="Create formatted PDF report of capital needs data"):
             with st.spinner("Generating Capital Report..."):
                 try:
@@ -1062,71 +1064,46 @@ def main():
                     capital_df['Total Capital Needs'] = capital_df['Total Capital Needs'].apply(lambda x: f"${x:,.0f}")
                     
                     table_html = capital_df.to_html(index=False, escape=False)
-                            
-                    # Combine summary and table
                     full_html = summary_html + table_html
                     
                     # Generate PDF
                     pdf_data = generate_pdf_from_html(full_html, filename_prefix)
                     
-                    # Create download button
-                    st.sidebar.download_button(
-                        label="⬇️ Download Capital Report (PDF)",
-                        data=pdf_data,
-                        file_name=f"{filename_prefix}_capital.pdf",
-                        mime="application/pdf"
-                    )
-                    
-                    st.sidebar.success("✅ Capital report generated successfully!")
+                    if pdf_data is not None and len(pdf_data) > 0:
+                        # Create download button
+                        st.sidebar.download_button(
+                            label="⬇️ Download Capital Report (PDF)",
+                            data=pdf_data,
+                            file_name=f"{filename_prefix}_capital.pdf",
+                            mime="application/pdf"
+                        )
+                        st.sidebar.success("✅ Capital report generated successfully!")
+                    else:
+                        st.sidebar.error("❌ PDF generation failed. Falling back to CSV download.")
+                        # Fallback to CSV
+                        csv_data = capital_df.to_csv(index=False)
+                        st.sidebar.download_button(
+                            label="⬇️ Download Capital Report (CSV)",
+                            data=csv_data,
+                            file_name=f"{filename_prefix}_capital.csv",
+                            mime="text/csv"
+                        )
+
                 except Exception as e:
                     st.sidebar.error(f"❌ Error generating report: {str(e)}")
-
-        if st.sidebar.button("📋 Generate Operations Report", help="Create formatted PDF report of operations data"):
-            with st.spinner("Generating Operations Report..."):
-                try:
-                    # Create summary metrics HTML
-                    summary_html = f"""
-                    <h1>Operations Report - {filename_prefix}</h1>
-                    <div class="metric"><strong>Schools:</strong> {len(filtered_df)}</div>
-                    <div class="metric"><strong>Total Operational Budget FY25:</strong> ${filtered_df['Operational Budget FY25'].sum():,.0f}</div>
-                    <div class="metric"><strong>Total Positions:</strong> {filtered_df['Positions'].sum():.1f}</div>
-                    <div class="metric"><strong>Total SPED Positions:</strong> {filtered_df['SPED Positions'].sum():.1f}</div>
-                    <br>
-                    """
-                    
-                    # Add the dataframe as HTML table
-                    ops_df = filtered_df[['School Name', 'Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut', 
-                                         'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
-                                         'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']].copy()
-                    
-                    # Format currency columns
-                    for col in ['Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut']:
-                        ops_df[col] = ops_df[col].apply(lambda x: f"${x:,.0f}")
-                    
-                    # Format position columns
-                    for col in ['Positions', 'Positions 7% Cut', 'Positions 15% Cut', 'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']:
-                        ops_df[col] = ops_df[col].apply(lambda x: f"{x:.1f}")
-                    
-                    table_html = ops_df.to_html(index=False, escape=False)
-                    
-                    # Combine summary and table
-                    full_html = summary_html + table_html
-                    
-                    # Generate PDF
-                    pdf_data = generate_pdf_from_html(full_html, filename_prefix)
-                    
-                    # Create download button
-                    st.sidebar.download_button(
-                        label="⬇️ Download Operations Report (PDF)",
-                        data=pdf_data,
-                        file_name=f"{filename_prefix}_operations.pdf",
-                        mime="application/pdf"
-                            )
-                            
-                    st.sidebar.success("✅ Operations report generated successfully!")
-
-                except Exception as e:
-                            st.sidebar.error(f"❌ Error generating report: {str(e)}")
+                    # Provide CSV fallback
+                    try:
+                        capital_df = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']]
+                        csv_data = capital_df.to_csv(index=False)
+                        st.sidebar.download_button(
+                            label="⬇️ Download Capital Report (CSV - Fallback)",
+                            data=csv_data,
+                            file_name=f"{filename_prefix}_capital.csv",
+                            mime="text/csv"
+                        )
+                        st.sidebar.info("ℹ️ PDF generation failed, but CSV download is available.")
+                    except:
+                        st.sidebar.error("❌ Both PDF and CSV generation failed.")
     
     # Create display dataframe
     display_df = filtered_df[display_columns].copy()
