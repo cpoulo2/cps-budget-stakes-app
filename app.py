@@ -352,11 +352,53 @@ def main():
         border: 1px solid #ddd !important;
     }
     
-    .stSidebar .stButton > button:hover {
+        /* Fix selectbox and other form elements */
+    .stSelectbox > div > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Fix radio buttons background */
+    .stRadio > div {
         background-color: #f0f2f6 !important;
         color: black !important;
     }
     
+    /* Fix radio button labels */
+    .stRadio > div > label {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Fix radio button options container */
+    .stRadio > div > div {
+        background-color: #f0f2f6 !important;
+    }
+    
+    /* Fix sidebar radio buttons specifically */
+    .stSidebar .stRadio > div {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    .stSidebar .stRadio > div > label {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* FORCE DOWNLOAD BUTTONS TO WHITE BACKGROUND */
+    .stDownloadButton > button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .stDownloadButton > button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Force sidebar download buttons to white */
     .stSidebar .stDownloadButton > button {
         background-color: white !important;
         color: black !important;
@@ -365,30 +407,6 @@ def main():
     
     .stSidebar .stDownloadButton > button:hover {
         background-color: #f0f2f6 !important;
-        color: black !important;
-    }
-    
-    /* Fix all button types */
-    .stButton > button {
-        background-color: white !important;
-        color: black !important;
-        border: 1px solid #ddd !important;
-    }
-    
-    .stButton > button:hover {
-        background-color: #f0f2f6 !important;
-        color: black !important;
-    }
-    
-    /* Fix selectbox and other form elements */
-    .stSelectbox > div > div {
-        background-color: white !important;
-        color: black !important;
-    }
-    
-    /* Fix radio buttons */
-    .stRadio > div {
-        background-color: white !important;
         color: black !important;
     }
     </style>
