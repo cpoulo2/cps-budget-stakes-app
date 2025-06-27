@@ -1083,91 +1083,27 @@ def main():
                                 color: black;
                             }}
                             table {{ 
-                                page-break-inside: avoid;
-                                width: 100%;
-                                border-collapse: collapse;
-                            }}
-                            th, td {{
-                                border: 1px solid #ddd;
-                                padding: 8px 4px;
-                                text-align: center;
-                                word-wrap: break-word;
-                            }}
-                            th {{
-                                background-color: #f2f2f2;
-                                font-weight: bold;
-                            }}
-                            td:first-child {{
-                                text-align: left;
+                                page-break-inside: avoid; 
                             }}
                             @media print {{
+                                body {{ margin: 0.5in; }}
+                                table {{ font-size: 10px; }}
                                 @page {{
                                     size: letter portrait;
-                                    margin: 0.3in;
+                                    margin: 0.5in;
                                 }}
-                                body {{ 
-                                    margin: 0 !important; 
-                                    padding: 0 !important;
-                                }}
-                                table {{ 
-                                    width: 100% !important;
-                                    font-size: 8px !important;
-                                    table-layout: fixed;
-                                }}
-                                th, td {{
-                                    padding: 2px 1px !important;
-                                    font-size: 8px !important;
-                                    line-height: 1 !important;
-                                    word-break: break-all;
-                                    overflow: hidden;
-                                }}
-                                th {{
-                                    font-size: 7px !important;
-                                }}
-                                /* Make school name column narrower for print */
-                                td:nth-child(1), th:nth-child(1) {{
-                                    width: 18% !important;
-                                    font-size: 7px !important;
-                                }}
-                                /* Budget columns */
-                                td:nth-child(2), td:nth-child(3), td:nth-child(4),
-                                th:nth-child(2), th:nth-child(3), th:nth-child(4) {{
-                                    width: 10% !important;
-                                }}
-                                /* Position columns */
-                                td:nth-child(5), td:nth-child(6), td:nth-child(7),
-                                th:nth-child(5), th:nth-child(6), th:nth-child(7) {{
-                                    width: 8% !important;
-                                }}
-                                /* SPED columns */
-                                td:nth-child(8), td:nth-child(9), td:nth-child(10),
-                                th:nth-child(8), th:nth-child(9), th:nth-child(10) {{
-                                    width: 8% !important;
-                                }}
-                                /* Hide the timestamp for print to save space */
-                                .timestamp {{
-                                    display: none !important;
-                                }}
-                                /* Rotate long headers for print */
-                                th {{
-                                    writing-mode: vertical-rl;
-                                    text-orientation: mixed;
-                                    height: 60px;
-                                    vertical-align: bottom;
-                                    white-space: nowrap;
-                                }}
-                                /* Keep School Name header normal */
-                                th:nth-child(1) {{
-                                    writing-mode: horizontal-tb;
-                                    text-orientation: initial;
-                                    height: auto;
+                                /* Force 80% scale for print */
+                                html {{
+                                    zoom: 0.8;
+                                    transform: scale(0.8);
+                                    transform-origin: top left;
                                 }}
                             }}
                         </style>
                     </head>
                     <body>
                         {html_content}
-                        <div class="timestamp" style="margin-top: 30px; font-size: 12px; color: #666;">
+                        <div style="margin-top: 30px; font-size: 12px; color: #666;">
                             Report generated on {pd.Timestamp.now().strftime('%B %d, %Y at %I:%M %p')}
                         </div>
                     </body>
