@@ -361,13 +361,13 @@ def main():
     [data-testid="stMetricLabel"] {
         font-size: 2.5rem !important;
         font-weight: 900 !important;
-        color: black !important;
+        color: red !important;
     }
     
     /* TARGET METRIC VALUES SPECIFICALLY */
     [data-testid="stMetricValue"] {
-        font-size: 1.3rem !important;
-        font-weight: 500 !important;
+        font-size: 2.3rem !important;
+        font-weight: 700 !important;
         color: black !important;
     }
     
