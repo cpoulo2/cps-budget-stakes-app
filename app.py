@@ -240,13 +240,30 @@ def main():
         background-color: #f0f2f6 !important;
     }
     
-     /* FIX MOBILE SIDEBAR - Add these new rules */
+    /* FIX MOBILE SIDEBAR BACKGROUND */
     .stSidebar {
         background-color: #f0f2f6 !important;
     }
-        
+    
     .stSidebar > div {
         background-color: #f0f2f6 !important;
+    }
+    
+    section[data-testid="stSidebar"] {
+        background-color: #f0f2f6 !important;
+    }
+    
+    section[data-testid="stSidebar"] > div {
+        background-color: #f0f2f6 !important;
+    }
+    
+    .stSidebar .element-container {
+        background-color: #f0f2f6 !important;
+    }
+    
+    .stSidebar .stMarkdown {
+        background-color: #f0f2f6 !important;
+        color: black !important;
     }
     
     /* Target mobile sidebar specifically */
