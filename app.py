@@ -601,6 +601,31 @@ def main():
         fill: black !important;
         stroke: black !important;
     }
+    
+       /* NUCLEAR OPTION FOR ALL ICONS - FORCE BLACK */
+    * svg, * svg path, * svg g, * svg polygon, * svg circle, * svg rect {
+        color: black !important;
+        fill: black !important;
+        stroke: black !important;
+    }
+    
+    /* Target specific arrow characters if they're text */
+    button::before, button::after {
+        color: black !important;
+    }
+    
+    /* Force any pseudo-elements to be black */
+    button * {
+        color: black !important;
+    }
+    
+    /* If arrows are Unicode characters */
+    [data-testid*="sidebar"] button, 
+    [data-testid*="Sidebar"] button,
+    button[title*="expand"],
+    button[title*="collapse"] {
+        color: black !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
