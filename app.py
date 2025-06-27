@@ -1135,7 +1135,7 @@ def main():
                                 }}
                                 @page {{
                                     size: letter portrait;
-                                    margin: 0.25in;
+                                    margin: 0.1in;
                                 }}
                             }}
                         </style>
