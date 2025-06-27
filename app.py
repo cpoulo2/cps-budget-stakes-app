@@ -11,17 +11,30 @@ import os
 import tempfile
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 def generate_pdf_from_html(html_content, filename_prefix):
-    """Generate PDF from HTML content using selenium"""
+    """Generate PDF from HTML content using selenium - Cloud compatible"""
     
-    # Set up Chrome options for high-quality PDF
+    # Set up Chrome options for cloud deployment
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-web-security")
+    chrome_options.add_argument("--allow-running-insecure-content")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-plugins")
+    chrome_options.add_argument("--disable-images")
+    chrome_options.add_argument("--disable-javascript")
+    chrome_options.add_argument("--virtual-time-budget=10000")
     
-    # PDF print settings for higher quality
+    # Try different Chrome binary locations for cloud deployment
+    chrome_options.binary_location = "/usr/bin/chromium"
+    
+    # PDF print settings
     chrome_options.add_experimental_option("useAutomationExtension", False)
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     
@@ -44,10 +57,11 @@ def generate_pdf_from_html(html_content, filename_prefix):
                     page-break-inside: avoid; 
                     border-collapse: collapse;
                     width: 100%;
+                    font-size: 12px;
                 }}
                 th, td {{
                     border: 1px solid #ddd;
-                    padding: 8px;
+                    padding: 6px;
                     text-align: left;
                 }}
                 th {{
@@ -57,6 +71,11 @@ def generate_pdf_from_html(html_content, filename_prefix):
                 .metric {{
                     font-size: 14px;
                     margin-bottom: 10px;
+                    font-weight: bold;
+                }}
+                h1 {{
+                    color: black;
+                    font-size: 18px;
                 }}
             </style>
         </head>
@@ -67,18 +86,19 @@ def generate_pdf_from_html(html_content, filename_prefix):
         """)
         html_filename = f.name
     
-    # Convert to PDF with high quality settings
-    driver = webdriver.Chrome(options=chrome_options)
-    
     try:
+        # Use webdriver manager to handle driver installation
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        
         # Load the HTML file
-        driver.get(f"file:///{html_filename.replace(chr(92), '/')}")
+        driver.get(f"file://{html_filename}")
         
-        # Wait a moment for content to load
+        # Wait for content to load
         import time
-        time.sleep(2)
+        time.sleep(3)
         
-        # Print to PDF with custom settings
+        # Print to PDF with settings optimized for cloud
         pdf_options = {
             'landscape': False,
             'displayHeaderFooter': False,
@@ -90,7 +110,7 @@ def generate_pdf_from_html(html_content, filename_prefix):
             'marginBottom': 0.4,
             'marginLeft': 0.4,
             'marginRight': 0.4,
-            'scale': 0.8
+            'scale': 0.7
         }
         
         pdf_data = driver.execute_cdp_cmd("Page.printToPDF", pdf_options)
@@ -98,8 +118,16 @@ def generate_pdf_from_html(html_content, filename_prefix):
         
         return pdf_bytes
             
+    except Exception as e:
+        # Fallback: if PDF generation fails, return None and handle gracefully
+        print(f"PDF generation failed: {e}")
+        return None
+        
     finally:
-        driver.quit()
+        try:
+            driver.quit()
+        except:
+            pass
         # Clean up HTML file
         if os.path.exists(html_filename):
             os.remove(html_filename)

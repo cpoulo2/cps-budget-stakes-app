@@ -4,3 +4,4 @@ numpy>=1.24.0
 polars>=0.20.0
 great-tables>=0.2.0
 selenium>=4.15.0
+webdriver-manager>=4.0.0
