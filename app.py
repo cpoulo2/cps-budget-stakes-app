@@ -353,26 +353,41 @@ def main():
         border: 1px solid #ddd !important;
     }
     
-    /* Fix selectbox and other form elements */
-    .stSelectbox > div > div {
-        background-color: white !important;
-        color: black !important;
-    }
-    
-    /* Fix radio buttons background - MAKE WHITE */
+    /* Fix radio buttons background - Container light gray, toggles white */
     .stRadio > div {
-        background-color: white !important;
+        background-color: #f0f2f6 !important;
         color: black !important;
     }
     
-    /* Fix radio button labels - MAKE WHITE */
+    /* Fix radio button labels - Container light gray */
     .stRadio > div > label {
-        background-color: white !important;
+        background-color: #f0f2f6 !important;
         color: black !important;
     }
     
-    /* Fix radio button options container - MAKE WHITE */
+    /* Fix radio button options container - Light gray */
     .stRadio > div > div {
+        background-color: #f0f2f6 !important;
+    }
+    
+    /* Fix the actual radio button circles - Make them white */
+    .stRadio input[type="radio"] {
+        background-color: white !important;
+    }
+    
+    /* Fix sidebar radio buttons specifically - Container light gray */
+    .stSidebar .stRadio > div {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    .stSidebar .stRadio > div > label {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Fix sidebar radio button circles - White */
+    .stSidebar .stRadio input[type="radio"] {
         background-color: white !important;
     }
     
