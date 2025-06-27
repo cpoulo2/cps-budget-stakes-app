@@ -538,6 +538,41 @@ def main():
         background-color: #f0f2f6 !important;
         color: black !important;
     }
+    
+        /* Sidebar expand/collapse button - Additional selectors */
+    [data-testid="stSidebarNavSeparator"] + div button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    [data-testid="stSidebarNavSeparator"] + div button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Force arrow icons to be black */
+    [data-testid="stSidebarNav"] button svg {
+        color: black !important;
+        fill: black !important;
+    }
+    
+    .css-1lcbmhc svg {
+        color: black !important;
+        fill: black !important;
+    }
+    
+    /* Additional arrow icon selectors */
+    button[data-testid="stSidebarNavSeparator"] + div button svg {
+        color: black !important;
+        fill: black !important;
+    }
+    
+    /* Catch any remaining arrow icons */
+    section[data-testid="stSidebar"] svg {
+        color: black !important;
+        fill: black !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
