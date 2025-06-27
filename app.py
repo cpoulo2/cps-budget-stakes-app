@@ -573,6 +573,34 @@ def main():
         color: black !important;
         fill: black !important;
     }
+    
+        /* FORCE SIDEBAR ARROW ICONS TO BE BLACK - FINAL OVERRIDE */
+    button svg, button svg path {
+        color: black !important;
+        fill: black !important;
+        stroke: black !important;
+    }
+    
+    /* Specific targeting for sidebar expand/collapse arrows */
+    [data-testid="stSidebarNav"] svg,
+    [data-testid="stSidebarNav"] svg path,
+    .css-1lcbmhc svg,
+    .css-1lcbmhc svg path,
+    section[data-testid="stSidebar"] svg,
+    section[data-testid="stSidebar"] svg path {
+        color: black !important;
+        fill: black !important;
+        stroke: black !important;
+    }
+    
+    /* Target any keyboard arrow icons specifically */
+    button[title*="Expand"] svg,
+    button[title*="Collapse"] svg,
+    button[aria-label*="sidebar"] svg {
+        color: black !important;
+        fill: black !important;
+        stroke: black !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
