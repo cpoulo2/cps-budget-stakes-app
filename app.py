@@ -1102,7 +1102,7 @@ def main():
                         <style>
                             body {{ 
                                 margin: 0; 
-                                padding: 20px; 
+                                padding: 15px; 
                                 font-family: Arial, sans-serif; 
                                 background-color: white;
                                 color: black;
