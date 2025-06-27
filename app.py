@@ -346,6 +346,43 @@ def main():
         font-weight: 800 !important;
     }
     
+       /* Additional metric targeting */
+    [data-testid="metric-container"] label {
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
+    }
+    
+    [data-testid="metric-container"] div[data-testid="metric-value"] {
+        font-size: 2.8rem !important;
+        font-weight: 800 !important;
+    }
+    
+    /* TARGET METRIC LABELS SPECIFICALLY */
+    [data-testid="stMetricLabel"] {
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
+        color: black !important;
+    }
+    
+    /* TARGET METRIC VALUES SPECIFICALLY */
+    [data-testid="stMetricValue"] {
+        font-size: 2.8rem !important;
+        font-weight: 800 !important;
+        color: black !important;
+    }
+    
+    /* TARGET METRIC DELTA SPECIFICALLY */
+    [data-testid="stMetricDelta"] {
+        font-size: 1.3rem !important;
+        color: black !important;
+    }
+    
+    /* Nuclear option for metric elements */
+    div[data-testid*="metric"] {
+        font-size: inherit !important;
+        color: black !important;
+    }
+    
     /* Ensure sidebar is also light */
     .css-1d391kg {
         background-color: #f0f2f6 !important;
