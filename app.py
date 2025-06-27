@@ -1112,10 +1112,10 @@ def main():
                                 width: 100%;
                             }}
                             @media print {{
-                                body {{ margin: 0.5in; }}
+                                body {{ margin: 0.3in; }}
                                 table {{ 
                                     font-size: 10px; 
-                                    width: 7.5in !important;
+                                    width: 7.9in !important;
                                     table-layout: fixed;
                                 }}
                                 /* Give budget columns MUCH more space for large numbers */
