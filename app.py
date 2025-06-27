@@ -359,15 +359,15 @@ def main():
     
    /* TARGET METRIC LABELS SPECIFICALLY - COMPREHENSIVE */
     [data-testid="stMetricLabel"] {
-        font-size: 2.5rem !important;
-        font-weight: 900 !important;
+        font-size: 2.1rem !important;
+        font-weight: 800 !important;
         color: black !important;
     }
     
     /* Alternative metric label selectors */
     .stMetric > div > div:first-child {
-        font-size: 2.5rem !important;
-        font-weight: 900 !important;
+        font-size: 2.1rem !important;
+        font-weight: 800 !important;
         color: black !important;
     }
     
@@ -375,15 +375,15 @@ def main():
     [data-testid="metric-container"] > div:first-child,
     [data-testid="metric-container"] label,
     .stMetric label {
-        font-size: 2.5rem !important;
-        font-weight: 900 !important;
+        font-size: 2.1rem !important;
+        font-weight: 800 !important;
         color: black !important;
     }
     
     /* Target metric text content directly */
     div[data-testid="metric-container"] div:first-child {
-        font-size: 2.5rem !important;
-        font-weight: 900 !important;
+        font-size: 2.1rem !important;
+        font-weight: 800 !important;
         color: black !important;
     }
     
