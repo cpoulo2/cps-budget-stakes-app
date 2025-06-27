@@ -479,6 +479,18 @@ def main():
         background-color: #f0f2f6 !important;
         color: black !important;
     }
+    
+        /* NUCLEAR OPTION - Force ALL buttons to white background */
+    button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
