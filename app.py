@@ -1094,8 +1094,8 @@ def main():
                                 }}
                                 /* Force 80% scale for print */
                                 html {{
-                                    zoom: 0.8;
-                                    transform: scale(0.8);
+                                    zoom: 0.9;
+                                    transform: scale(0.9);
                                     transform-origin: top left;
                                 }}
                             }}
