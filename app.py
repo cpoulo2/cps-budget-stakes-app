@@ -316,6 +316,36 @@ def main():
         color: black !important;
     }
     
+        /* INCREASE METRIC FONT SIZE */
+    .stMetric {
+        font-size: 1.1rem !important;
+    }
+    
+    .stMetric label {
+        font-size: 1.2rem !important;
+        font-weight: 600 !important;
+    }
+    
+    .stMetric [data-testid="metric-value"] {
+        font-size: 2.2rem !important;
+        font-weight: 700 !important;
+    }
+    
+    .stMetric [data-testid="metric-delta"] {
+        font-size: 1.1rem !important;
+    }
+    
+    /* Additional metric targeting */
+    [data-testid="metric-container"] label {
+        font-size: 1.2rem !important;
+        font-weight: 600 !important;
+    }
+    
+    [data-testid="metric-container"] div[data-testid="metric-value"] {
+        font-size: 2.2rem !important;
+        font-weight: 700 !important;
+    }
+    
     /* Ensure sidebar is also light */
     .css-1d391kg {
         background-color: #f0f2f6 !important;
