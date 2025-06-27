@@ -6,6 +6,104 @@ import numpy as np
 import polars as pl
 from great_tables import GT, loc, style
 
+import base64
+import os
+import tempfile
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+def generate_pdf_from_html(html_content, filename_prefix):
+    """Generate PDF from HTML content using selenium"""
+    
+    # Set up Chrome options for high-quality PDF
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    
+    # PDF print settings for higher quality
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    
+    # Create temporary HTML file
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False, encoding='utf-8') as f:
+        f.write(f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body {{ 
+                    margin: 0; 
+                    padding: 20px; 
+                    font-family: Arial, sans-serif; 
+                    background-color: white;
+                    color: black;
+                }}
+                table {{ 
+                    page-break-inside: avoid; 
+                    border-collapse: collapse;
+                    width: 100%;
+                }}
+                th, td {{
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: left;
+                }}
+                th {{
+                    background-color: #f2f2f2;
+                    font-weight: bold;
+                }}
+                .metric {{
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                }}
+            </style>
+        </head>
+        <body>
+            {html_content}
+        </body>
+        </html>
+        """)
+        html_filename = f.name
+    
+    # Convert to PDF with high quality settings
+    driver = webdriver.Chrome(options=chrome_options)
+    
+    try:
+        # Load the HTML file
+        driver.get(f"file:///{html_filename.replace(chr(92), '/')}")
+        
+        # Wait a moment for content to load
+        import time
+        time.sleep(2)
+        
+        # Print to PDF with custom settings
+        pdf_options = {
+            'landscape': False,
+            'displayHeaderFooter': False,
+            'printBackground': True,
+            'preferCSSPageSize': True,
+            'paperWidth': 8.5,
+            'paperHeight': 11,
+            'marginTop': 0.4,
+            'marginBottom': 0.4,
+            'marginLeft': 0.4,
+            'marginRight': 0.4,
+            'scale': 0.8
+        }
+        
+        pdf_data = driver.execute_cdp_cmd("Page.printToPDF", pdf_options)
+        pdf_bytes = base64.b64decode(pdf_data['data'])
+        
+        return pdf_bytes
+            
+    finally:
+        driver.quit()
+        # Clean up HTML file
+        if os.path.exists(html_filename):
+            os.remove(html_filename)
+
 # PDF generation function
 def create_html_download(table, title):
     """Create downloadable HTML file from great_tables"""
@@ -894,43 +992,89 @@ def main():
             help="Download all capital and operations data as CSV"
         )
         
-        # HTML download of operations table
-        if st.sidebar.button("📋 Generate Operations Report", help="Create formatted HTML report of operations data"):
-            with st.spinner("Generating Operations Report..."):
-                try:
-                    operations_table, _ = create_formatted_tables(filtered_df, district_name)
-                    
-                    html_data = create_html_download(operations_table, f"{district_name} - Operations Report")
-                    
-                    st.sidebar.download_button(
-                        label="⬇️ Download Operations Report (HTML)",
-                        data=html_data,
-                        file_name=f"{filename_prefix}_operations.html",
-                        mime="text/html"
-                    )
-                    st.sidebar.success("✅ Operations report ready!")
-                except Exception as e:
-                    st.sidebar.error(f"Error: {str(e)}")
-        
-        # HTML download of capital table
-        if st.sidebar.button("🏗️ Generate Capital Report", help="Create formatted HTML report of capital needs data"):
+        if st.sidebar.button("📊 Generate Capital Report", help="Create formatted PDF report of capital needs data"):
             with st.spinner("Generating Capital Report..."):
                 try:
-                    _, capital_table = create_formatted_tables(filtered_df, district_name)
+                    # Create summary metrics HTML
+                    summary_html = f"""
+                    <h1>Capital Needs Report - {filename_prefix}</h1>
+                    <div class="metric"><strong>Schools:</strong> {len(filtered_df)}</div>
+                    <div class="metric"><strong>Total Immediate Capital Needs:</strong> ${filtered_df['Immediate Capital Needs'].sum():,.0f}</div>
+                    <div class="metric"><strong>Total Capital Needs:</strong> ${filtered_df['Total Capital Needs'].sum():,.0f}</div>
+                    <br>
+                    """
                     
-                    html_data = create_html_download(capital_table, f"{district_name} - Capital Needs Report")
+                    # Add the dataframe as HTML table
+                    capital_df = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']].copy()
+                    capital_df['Immediate Capital Needs'] = capital_df['Immediate Capital Needs'].apply(lambda x: f"${x:,.0f}")
+                    capital_df['Total Capital Needs'] = capital_df['Total Capital Needs'].apply(lambda x: f"${x:,.0f}")
                     
+                    table_html = capital_df.to_html(index=False, escape=False)
+                            
+                    # Combine summary and table
+                    full_html = summary_html + table_html
+                    
+                    # Generate PDF
+                    pdf_data = generate_pdf_from_html(full_html, filename_prefix)
+                    
+                    # Create download button
                     st.sidebar.download_button(
-                        label="⬇️ Download Capital Report (HTML)",
-                        data=html_data,
-                        file_name=f"{filename_prefix}_capital.html",
-                        mime="text/html"
+                        label="⬇️ Download Capital Report (PDF)",
+                        data=pdf_data,
+                        file_name=f"{filename_prefix}_capital.pdf",
+                        mime="application/pdf"
                     )
-                    st.sidebar.success("✅ Capital report ready!")
+                    
+                    st.sidebar.success("✅ Capital report generated successfully!")
                 except Exception as e:
-                    st.sidebar.error(f"Error: {str(e)}")
-    else:
-        st.sidebar.info("Select a district or legislator to enable downloads.")
+                    st.sidebar.error(f"❌ Error generating report: {str(e)}")
+
+        if st.sidebar.button("📋 Generate Operations Report", help="Create formatted PDF report of operations data"):
+            with st.spinner("Generating Operations Report..."):
+                try:
+                    # Create summary metrics HTML
+                    summary_html = f"""
+                    <h1>Operations Report - {filename_prefix}</h1>
+                    <div class="metric"><strong>Schools:</strong> {len(filtered_df)}</div>
+                    <div class="metric"><strong>Total Operational Budget FY25:</strong> ${filtered_df['Operational Budget FY25'].sum():,.0f}</div>
+                    <div class="metric"><strong>Total Positions:</strong> {filtered_df['Positions'].sum():.1f}</div>
+                    <div class="metric"><strong>Total SPED Positions:</strong> {filtered_df['SPED Positions'].sum():.1f}</div>
+                    <br>
+                    """
+                    
+                    # Add the dataframe as HTML table
+                    ops_df = filtered_df[['School Name', 'Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut', 
+                                         'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
+                                         'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']].copy()
+                    
+                    # Format currency columns
+                    for col in ['Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut']:
+                        ops_df[col] = ops_df[col].apply(lambda x: f"${x:,.0f}")
+                    
+                    # Format position columns
+                    for col in ['Positions', 'Positions 7% Cut', 'Positions 15% Cut', 'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']:
+                        ops_df[col] = ops_df[col].apply(lambda x: f"{x:.1f}")
+                    
+                    table_html = ops_df.to_html(index=False, escape=False)
+                    
+                    # Combine summary and table
+                    full_html = summary_html + table_html
+                    
+                    # Generate PDF
+                    pdf_data = generate_pdf_from_html(full_html, filename_prefix)
+                    
+                    # Create download button
+                    st.sidebar.download_button(
+                        label="⬇️ Download Operations Report (PDF)",
+                        data=pdf_data,
+                        file_name=f"{filename_prefix}_operations.pdf",
+                        mime="application/pdf"
+                            )
+                            
+                    st.sidebar.success("✅ Operations report generated successfully!")
+
+                except Exception as e:
+                            st.sidebar.error(f"❌ Error generating report: {str(e)}")
     
     # Create display dataframe
     display_df = filtered_df[display_columns].copy()
