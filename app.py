@@ -1092,7 +1092,6 @@ def main():
                     html_content = operations_table._repr_html_()
                     
                     # Create complete HTML document
-
                     full_html = f"""
                     <!DOCTYPE html>
                     <html>
@@ -1120,10 +1119,46 @@ def main():
                                 table {{ 
                                     width: 7.5in !important;
                                     max-width: 7.5in !important;
-                                    font-size: 10px; 
-                                    zoom: 1;
+                                    font-size: 9px !important;
                                     table-layout: fixed;
                                     page-break-inside: auto;
+                                }}
+                                /* Set specific column widths for large numbers */
+                                th, td {{
+                                    padding: 3px 1px !important;
+                                    font-size: 9px !important;
+                                    line-height: 1 !important;
+                                    word-wrap: break-word;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                }}
+                                /* School name - narrower to give more space to numbers */
+                                th:nth-child(1), td:nth-child(1) {{
+                                    width: 18% !important;
+                                    text-align: left !important;
+                                    font-size: 8px !important;
+                                }}
+                                /* Budget columns - wider for large dollar amounts */
+                                th:nth-child(2), td:nth-child(2),  /* FY25 Budget */
+                                th:nth-child(3), td:nth-child(3),  /* 7% Cut */
+                                th:nth-child(4), td:nth-child(4) {{ /* 15% Cut */
+                                    width: 15% !important;
+                                    font-size: 8px !important;
+                                    padding: 3px 1px !important;
+                                }}
+                                /* Position columns - smaller but adequate */
+                                th:nth-child(5), td:nth-child(5),  /* Positions */
+                                th:nth-child(6), td:nth-child(6),  /* 7% Cut */
+                                th:nth-child(7), td:nth-child(7) {{ /* 15% Cut */
+                                    width: 7% !important;
+                                    font-size: 8px !important;
+                                }}
+                                /* SPED columns - smaller but adequate */
+                                th:nth-child(8), td:nth-child(8),  /* SPED Positions */
+                                th:nth-child(9), td:nth-child(9),  /* 7% Cut */
+                                th:nth-child(10), td:nth-child(10) {{ /* 15% Cut */
+                                    width: 7% !important;
+                                    font-size: 8px !important;
                                 }}
                                 /* Allow table rows to break across pages */
                                 tr {{
@@ -1135,7 +1170,7 @@ def main():
                                 }}
                                 @page {{
                                     size: letter portrait;
-                                    margin: 0in;
+                                    margin: 0.5in;
                                 }}
                             }}
                         </style>
