@@ -1118,24 +1118,24 @@ def main():
                                     width: 7.5in !important;
                                     table-layout: fixed;
                                 }}
-                                /* Give budget columns more space for large numbers */
+                                /* Give budget columns MUCH more space for large numbers */
                                 th:nth-child(2), td:nth-child(2),
                                 th:nth-child(3), td:nth-child(3),
                                 th:nth-child(4), td:nth-child(4) {{
-                                    width: 16% !important;
+                                    width: 18% !important;
                                 }}
-                                /* Make school name column smaller */
+                                /* Make school name column even smaller */
                                 th:nth-child(1), td:nth-child(1) {{
-                                    width: 15% !important;
+                                    width: 12% !important;
                                 }}
-                                /* Position and SPED columns */
+                                /* Position and SPED columns - smaller to make room */
                                 th:nth-child(5), td:nth-child(5),
                                 th:nth-child(6), td:nth-child(6),
                                 th:nth-child(7), td:nth-child(7),
                                 th:nth-child(8), td:nth-child(8),
                                 th:nth-child(9), td:nth-child(9),
                                 th:nth-child(10), td:nth-child(10) {{
-                                    width: 8.5% !important;
+                                    width: 7% !important;
                                 }}
                                 @page {{
                                     size: letter portrait;
