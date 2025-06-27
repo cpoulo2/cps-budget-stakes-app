@@ -1065,7 +1065,7 @@ def main():
                                 "Operations 15% Cut": "15% Cuts",
                                 "Positions 7% Cut": "7% Cuts",
                                 "Positions 15% Cut": "15% Cuts",
-                                "SPED Positions 7% Cut": "7%\nCuts",
+                                "SPED Positions 7% Cut": "7%\nCutZ",
                                 "SPED Positions 15% Cut": "15% Cuts"
                             }
                         )
