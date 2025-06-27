@@ -318,32 +318,32 @@ def main():
     
         /* INCREASE METRIC FONT SIZE */
     .stMetric {
-        font-size: 1.1rem !important;
+        font-size: 1.3rem !important;
     }
     
     .stMetric label {
         font-size: 1.2rem !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
     }
     
     .stMetric [data-testid="metric-value"] {
         font-size: 2.2rem !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
     }
     
     .stMetric [data-testid="metric-delta"] {
-        font-size: 1.1rem !important;
+        font-size: 1.3rem !important;
     }
     
     /* Additional metric targeting */
     [data-testid="metric-container"] label {
-        font-size: 1.2rem !important;
-        font-weight: 600 !important;
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
     }
     
     [data-testid="metric-container"] div[data-testid="metric-value"] {
-        font-size: 2.2rem !important;
-        font-weight: 700 !important;
+        font-size: 2.8rem !important;
+        font-weight: 800 !important;
     }
     
     /* Ensure sidebar is also light */
