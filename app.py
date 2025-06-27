@@ -1113,17 +1113,50 @@ def main():
                             }}
                             @media print {{
                                 body {{ 
-                                    margin: 0.25in; 
+                                    margin: 0.5in; 
                                     -webkit-print-color-adjust: exact;
                                     print-color-adjust: exact;
                                 }}
                                 table {{ 
-                                    width: 8.5in !important;
-                                    max-width: 8.5in !important;
-                                    font-size: 10px; 
-                                    zoom: 1;
+                                    width: 7.5in !important;
+                                    max-width: 7.5in !important;
+                                    font-size: 8px !important; 
                                     table-layout: fixed;
                                     page-break-inside: auto;
+                                }}
+                                /* Fix column widths for large numbers */
+                                th, td {{
+                                    padding: 3px 2px !important;
+                                    font-size: 8px !important;
+                                    line-height: 1 !important;
+                                    word-wrap: break-word;
+                                    overflow-wrap: break-word;
+                                }}
+                                /* School name column */
+                                th:nth-child(1), td:nth-child(1) {{
+                                    width: 20% !important;
+                                    text-align: left !important;
+                                }}
+                                /* Budget columns - wider for large numbers */
+                                th:nth-child(2), td:nth-child(2),
+                                th:nth-child(3), td:nth-child(3),
+                                th:nth-child(4), td:nth-child(4) {{
+                                    width: 13% !important;
+                                    font-size: 7px !important;
+                                }}
+                                /* Position columns */
+                                th:nth-child(5), td:nth-child(5),
+                                th:nth-child(6), td:nth-child(6),
+                                th:nth-child(7), td:nth-child(7) {{
+                                    width: 8% !important;
+                                    font-size: 7px !important;
+                                }}
+                                /* SPED columns */
+                                th:nth-child(8), td:nth-child(8),
+                                th:nth-child(9), td:nth-child(9),
+                                th:nth-child(10), td:nth-child(10) {{
+                                    width: 8% !important;
+                                    font-size: 7px !important;
                                 }}
                                 /* Allow table rows to break across pages */
                                 tr {{
@@ -1135,7 +1168,7 @@ def main():
                                 }}
                                 @page {{
                                     size: letter portrait;
-                                    margin: 0.25in;
+                                    margin: 0.5in;
                                 }}
                             }}
                         </style>
