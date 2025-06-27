@@ -101,7 +101,7 @@ def create_formatted_tables(df_filtered, district_name):
         .tab_header(f"{district_name} - CPS School-Level Budget Cut Impacts")
         .tab_spanner(label="Operations Budget Impact", columns=budget_cols)
         .tab_spanner(label="Positions Impact", columns=position_cols)
-        .tab_spanner(label="SPED Positions Impact", columns=sped_cols)
+        .tab_spanner(label="SPED<br>Positions Impact", columns=sped_cols)
         .cols_label(
             **{
                 "Operational Budget FY25": "FY25 Budget",
@@ -109,6 +109,7 @@ def create_formatted_tables(df_filtered, district_name):
                 "Operations 15% Cut": "15% Cuts",
                 "Positions 7% Cut": "7% Cuts",
                 "Positions 15% Cut": "15% Cuts",
+                "SPED Positions": "SPED<br>Positions",
                 "SPED Positions 7% Cut": "7% Cuts",
                 "SPED Positions 15% Cut": "15% Cuts"
             }
