@@ -1096,7 +1096,7 @@ def main():
                                     width: 7.5in !important;
                                     max-width: 7.5in !important;
                                     font-size: 10px; 
-                                    zoom: .85;
+                                    zoom: .8;
                                     table-layout: fixed;
                                     page-break-inside: auto;
                                 }}
