@@ -1114,7 +1114,7 @@ def main():
                             @media print {{
                                 body {{ margin: 0.3in; }}
                                 table {{ 
-                                    font-size: 10px; 
+                                    font-size: 9px; 
                                     width: 7.9in !important;
                                     max-width: 7.9in !important;
                                     table-layout: fixed;
