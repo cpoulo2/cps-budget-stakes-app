@@ -1083,7 +1083,8 @@ def main():
                                 color: black;
                             }}
                             table {{ 
-                                page-break-inside: avoid; 
+                                page-break-inside: auto; 
+                                width: 100%;
                             }}
                             @media print {{
                                 body {{ 
@@ -1092,18 +1093,24 @@ def main():
                                     print-color-adjust: exact;
                                 }}
                                 table {{ 
+                                    width: 7.5in !important;
+                                    max-width: 7.5in !important;
                                     font-size: 10px; 
-                                    zoom: 0.8;
+                                    zoom: 0.9;
+                                    table-layout: fixed;
+                                    page-break-inside: auto;
+                                }}
+                                /* Allow table rows to break across pages */
+                                tr {{
+                                    page-break-inside: avoid;
+                                }}
+                                /* Keep header on each page */
+                                thead {{
+                                    display: table-header-group;
                                 }}
                                 @page {{
                                     size: letter portrait;
                                     margin: 0.5in;
-                                }}
-                                /* Force 80% scale for print */
-                                html {{
-                                    zoom: 0.8;
-                                    transform: scale(0.8);
-                                    transform-origin: top left;
                                 }}
                             }}
                         </style>
