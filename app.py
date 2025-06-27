@@ -409,6 +409,30 @@ def main():
         background-color: #f0f2f6 !important;
         color: black !important;
     }
+    
+    /* Target the CSV download button specifically */
+    .stSidebar [data-testid="stDownloadButton"] button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .stSidebar [data-testid="stDownloadButton"] button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Nuclear option for all sidebar buttons */
+    section[data-testid="stSidebar"] button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    section[data-testid="stSidebar"] button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
