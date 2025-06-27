@@ -391,6 +391,34 @@ def main():
         background-color: white !important;
     }
     
+    /* Fix selectbox (dropdown) containers - Make them white */
+    .stSelectbox > div > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .stSelectbox > div > div > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Fix sidebar selectbox specifically */
+    .stSidebar .stSelectbox > div > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .stSidebar .stSelectbox > div > div > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Fix selectbox input field */
+    .stSelectbox input {
+        background-color: white !important;
+        color: black !important;
+    }
+    
     .stSidebar .stRadio > div > label {
         background-color: white !important;
         color: black !important;
@@ -480,7 +508,7 @@ def main():
         color: black !important;
     }
     
-        /* NUCLEAR OPTION - Force ALL buttons to white background */
+    /* NUCLEAR OPTION - Force ALL buttons to white background */
     button {
         background-color: white !important;
         color: black !important;
