@@ -1116,17 +1116,18 @@ def main():
                                 table {{ 
                                     font-size: 10px; 
                                     width: 7.9in !important;
+                                    max-width: 7.9in !important;
                                     table-layout: fixed;
                                 }}
                                 /* Give budget columns MUCH more space for large numbers */
                                 th:nth-child(2), td:nth-child(2),
                                 th:nth-child(3), td:nth-child(3),
                                 th:nth-child(4), td:nth-child(4) {{
-                                    width: 18% !important;
+                                    width: 20% !important;
                                 }}
                                 /* Make school name column even smaller */
                                 th:nth-child(1), td:nth-child(1) {{
-                                    width: 12% !important;
+                                    width: 15% !important;
                                 }}
                                 /* Position and SPED columns - smaller to make room */
                                 th:nth-child(5), td:nth-child(5),
@@ -1135,11 +1136,11 @@ def main():
                                 th:nth-child(8), td:nth-child(8),
                                 th:nth-child(9), td:nth-child(9),
                                 th:nth-child(10), td:nth-child(10) {{
-                                    width: 7% !important;
+                                    width: 7.5% !important;
                                 }}
                                 @page {{
                                     size: letter portrait;
-                                    margin: 0.5in;
+                                    margin: 0.3in;
                                 }}
                             }}
                         </style>
