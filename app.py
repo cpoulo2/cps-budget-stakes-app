@@ -185,7 +185,7 @@ def main():
         color: black !important;
     }
     
-    /* TARGET MAIN CONTENT AREA SPECIFICALLY */
+        /* TARGET MAIN CONTENT AREA SPECIFICALLY - RESPONSIVE */
     .main .block-container {
         padding-left: 4rem !important;
         padding-right: 4rem !important;
@@ -193,25 +193,24 @@ def main():
         width: 100% !important;
     }
     
-    /* Use stMain to target main content */
+    /* Use stMain to target main content - DESKTOP */
     .stMain .block-container {
         padding-left: 6rem !important;
         padding-right: 6rem !important;
         max-width: none !important;
     }
     
-    /* Force main content to use full width */
-    .stMain {
-        width: 100% !important;
-        max-width: none !important;
-    }
-    
-    /* Ensure tables use full width */
-    .stTabs [data-baseweb="tab-panel"] {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        width: 100% !important;
-    }
+    /* MOBILE RESPONSIVE - Reduce padding on small screens */
+    @media (max-width: 768px) {
+        .main .block-container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        .stMain .block-container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
     
     /* Force all text to be black */
     .stMarkdown, .stText, .stCaption, .stSubheader, .stHeader, .stTitle {
@@ -802,7 +801,7 @@ def main():
     ]   
 
     # Create tabs for data display
-    tab1, tab2 = st.tabs(["💰 Capital Needs", "🏢 Operations & Positions"])
+    tab1, tab2 = st.tabs(["💰 Capital Needs ", " 🏢 Operations & Positions "])
     
     # Format currency and numbers functions
     def format_currency(val):
