@@ -359,15 +359,15 @@ def main():
     
     /* TARGET METRIC LABELS SPECIFICALLY */
     [data-testid="stMetricLabel"] {
-        font-size: 1.5rem !important;
-        font-weight: 700 !important;
+        font-size: 2.5rem !important;
+        font-weight: 900 !important;
         color: black !important;
     }
     
     /* TARGET METRIC VALUES SPECIFICALLY */
     [data-testid="stMetricValue"] {
-        font-size: 2.8rem !important;
-        font-weight: 800 !important;
+        font-size: 2.3rem !important;
+        font-weight: 700 !important;
         color: black !important;
     }
     
