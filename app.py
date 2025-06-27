@@ -1436,7 +1436,7 @@ def main():
                 .custom-table td {
                     padding: 8px 10px;
                     border: 1px solid #ddd;
-                    text-align: center;
+                    text-align: left;
                 }
                 .custom-table td:first-child {
                     text-align: left;
