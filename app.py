@@ -510,6 +510,30 @@ def main():
         border: 1px solid #ddd !important;
     }
     
+        /* FIX SIDEBAR EXPAND BUTTON - MAKE WHITE */
+    [data-testid="stSidebarNav"] button {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    [data-testid="stSidebarNav"] button:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Alternative selector for sidebar expand button */
+    .css-1lcbmhc {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .css-1lcbmhc:hover {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
     button:hover {
         background-color: #f0f2f6 !important;
         color: black !important;
