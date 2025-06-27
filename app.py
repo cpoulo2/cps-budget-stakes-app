@@ -1124,7 +1124,7 @@ def main():
                                 th:nth-child(2), td:nth-child(2),
                                 th:nth-child(3), td:nth-child(3),
                                 th:nth-child(4), td:nth-child(4) {{
-                                    width: 25% !important;
+                                    width: 35% !important;
                                 }}
                                 /* Make school name column even smaller */
                                 th:nth-child(1), td:nth-child(1) {{
