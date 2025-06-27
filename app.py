@@ -157,6 +157,34 @@ def main():
         color: black !important;
     }
     
+        /* FIX APP HEADER - MAKE WHITE ON MOBILE */
+    .stAppHeader {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .stAppHeader > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Fix header text and elements */
+    .stAppHeader * {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Target header specifically for mobile */
+    [data-testid="stHeader"] {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    [data-testid="stHeader"] > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
     /* TARGET MAIN CONTENT AREA SPECIFICALLY */
     .main .block-container {
         padding-left: 4rem !important;
@@ -626,6 +654,7 @@ def main():
     button[title*="collapse"] {
         color: black !important;
     }
+    
     </style>
     """, unsafe_allow_html=True)
     
