@@ -899,7 +899,7 @@ def main():
             help="Download all capital and operations data as CSV"
         )
         
-        if st.sidebar.button("📋 Generate Capital Report", help="Create formatted HTML report of capital needs data"):
+        if st.sidebar.button("📋 Generate Capital Report", help="Create formatted report of capital needs data"):
             with st.spinner("Generating Capital Report..."):
                 try:
                     # Add district total row to filtered_df
@@ -977,7 +977,7 @@ def main():
                 except Exception as e:
                     st.sidebar.error(f"❌ Error generating report: {str(e)}")
 
-        if st.sidebar.button("📋 Generate Operations Report", help="Create formatted HTML report of operations data"):
+        if st.sidebar.button("📋 Generate Operations Report", help="Create formatted report of operations data"):
             with st.spinner("Generating Operations Report..."):
                 try:
                     # Create operations dataframe with totals
@@ -1068,7 +1068,7 @@ def main():
                     
                     # Create download button for HTML
                     st.sidebar.download_button(
-                        label="⬇️ Download Operations Report (HTML)",
+                        label="⬇️ Download Operations Report",
                         data=full_html.encode('utf-8'),
                         file_name=f"{filename_prefix}_operations_report.html",
                         mime="text/html"
