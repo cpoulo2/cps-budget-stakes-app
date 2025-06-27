@@ -1088,7 +1088,7 @@ def main():
                             }}
                             @media print {{
                                 body {{ 
-                                    margin: 0.5in; 
+                                    margin: 0.25in; 
                                     -webkit-print-color-adjust: exact;
                                     print-color-adjust: exact;
                                 }}
@@ -1096,7 +1096,7 @@ def main():
                                     width: 7.5in !important;
                                     max-width: 7.5in !important;
                                     font-size: 10px; 
-                                    zoom: .8;
+                                    zoom: .9;
                                     table-layout: fixed;
                                     page-break-inside: auto;
                                 }}
@@ -1110,7 +1110,7 @@ def main():
                                 }}
                                 @page {{
                                     size: letter portrait;
-                                    margin: 0.5in;
+                                    margin: 0.25in;
                                 }}
                             }}
                         </style>
