@@ -958,10 +958,35 @@ def main():
                                 color: black;
                             }}
                             table {{ 
-                                page-break-inside: avoid; 
+                                page-break-inside: auto; 
+                                width: 100%;
                             }}
                             @media print {{
-                                body {{ margin: 0.5in; }}
+                                body {{ 
+                                    margin: 0.25in; 
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                }}
+                                table {{ 
+                                    width: 8.5in !important;
+                                    max-width: 8.5in !important;
+                                    font-size: 10px; 
+                                    zoom: 1;
+                                    table-layout: fixed;
+                                    page-break-inside: auto;
+                                }}
+                                /* Allow table rows to break across pages */
+                                tr {{
+                                    page-break-inside: avoid;
+                                }}
+                                /* Keep header on each page */
+                                thead {{
+                                    display: table-header-group;
+                                }}
+                                @page {{
+                                    size: letter portrait;
+                                    margin: 0.25in;
+                                }}
                             }}
                         </style>
                     </head>
