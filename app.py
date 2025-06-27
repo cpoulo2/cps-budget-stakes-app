@@ -419,11 +419,6 @@ def main():
         color: black !important;
     }
     
-    .stSidebar .stRadio > div > label {
-        background-color: white !important;
-        color: black !important;
-    }
-    
     /* FORCE DOWNLOAD BUTTONS TO WHITE BACKGROUND */
     .stDownloadButton > button {
         background-color: white !important;
