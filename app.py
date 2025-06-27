@@ -898,25 +898,52 @@ def main():
             help="Download all capital and operations data as CSV"
         )
         
-# Replace the download button sections with better error handling:
-
         if st.sidebar.button("📊 Generate Capital Report", help="Create formatted HTML report of capital needs data"):
             with st.spinner("Generating Capital Report..."):
                 try:
-                    # Create summary metrics
-                    summary_stats = {
-                        'Total Schools': len(filtered_df),
-                        'Total Immediate Capital Needs': f"${filtered_df['Immediate Capital Needs'].sum():,.0f}",
-                        'Total Capital Needs': f"${filtered_df['Total Capital Needs'].sum():,.0f}"
-                    }
+                    # Add district total row to filtered_df
+                    capital_df_with_total = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']].copy()
                     
-                    # Create formatted dataframe
-                    capital_df = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']].copy()
-                    capital_df['Immediate Capital Needs'] = capital_df['Immediate Capital Needs'].apply(lambda x: f"${x:,.0f}")
-                    capital_df['Total Capital Needs'] = capital_df['Total Capital Needs'].apply(lambda x: f"${x:,.0f}")
+                    # Create district total row
+                    total_row = pd.DataFrame([[
+                        f"{district_name} Total",
+                        capital_df_with_total['Immediate Capital Needs'].sum(),
+                        capital_df_with_total['Total Capital Needs'].sum()
+                    ]])
+                    total_row.columns = capital_df_with_total.columns
+                    capital_df_with_total = pd.concat([capital_df_with_total, total_row], ignore_index=True)
                     
-                    # Create HTML report
-                    html_report = f"""
+                    # Rename columns for great_tables
+                    capital_df_with_total.columns = ['School Name', 'Immediate (within 5 years)', 'Total']
+                    
+                    # Convert to polars for great_tables
+                    capital_df_pl = pl.from_pandas(capital_df_with_total)
+                    
+                    # Create great_tables capital table
+                    capital_table = (
+                        GT(capital_df_pl)
+                        .tab_header(f"{district_name} - CPS School Capital Needs")
+                        .fmt_currency(
+                            columns=["Immediate (within 5 years)", "Total"],
+                            decimals=0,
+                        )
+                        .sub_missing(missing_text="")
+                        .tab_style(
+                            style=style.text(weight="bold"),
+                            locations=loc.body(rows=pl.col("School Name").str.contains("Total"))
+                        )
+                        .cols_width({
+                            "School Name": "250px",
+                            "Immediate (within 5 years)": "150px",
+                            "Total": "150px"
+                        })
+                    )
+                    
+                    # Get HTML content from great_tables
+                    html_content = capital_table._repr_html_()
+                    
+                    # Create complete HTML document
+                    full_html = f"""
                     <!DOCTYPE html>
                     <html>
                     <head>
@@ -924,53 +951,14 @@ def main():
                         <title>Capital Needs Report - {filename_prefix}</title>
                         <style>
                             body {{ 
+                                margin: 0; 
+                                padding: 20px; 
                                 font-family: Arial, sans-serif; 
-                                margin: 20px; 
                                 background-color: white;
                                 color: black;
                             }}
-                            .header {{ 
-                                text-align: center; 
-                                margin-bottom: 30px; 
-                                border-bottom: 2px solid #333;
-                                padding-bottom: 15px;
-                            }}
-                            .metrics {{ 
-                                display: flex; 
-                                justify-content: space-around; 
-                                margin-bottom: 30px;
-                                background-color: #f5f5f5;
-                                padding: 15px;
-                                border-radius: 5px;
-                            }}
-                            .metric {{ 
-                                text-align: center; 
-                            }}
-                            .metric-value {{ 
-                                font-size: 24px; 
-                                font-weight: bold; 
-                                color: #2E86AB;
-                            }}
                             table {{ 
-                                border-collapse: collapse; 
-                                width: 100%; 
-                                margin-top: 20px;
-                            }}
-                            th, td {{ 
-                                border: 1px solid #ddd; 
-                                padding: 12px; 
-                                text-align: left; 
-                            }}
-                            th {{ 
-                                background-color: #f2f2f2; 
-                                font-weight: bold;
-                                text-align: center;
-                            }}
-                            td:nth-child(2), td:nth-child(3) {{ 
-                                text-align: right; 
-                            }}
-                            tr:nth-child(even) {{ 
-                                background-color: #f9f9f9; 
+                                page-break-inside: avoid; 
                             }}
                             @media print {{
                                 body {{ margin: 0.5in; }}
@@ -978,28 +966,7 @@ def main():
                         </style>
                     </head>
                     <body>
-                        <div class="header">
-                            <h1>Capital Needs Report</h1>
-                            <h2>{district_name}</h2>
-                        </div>
-                        
-                        <div class="metrics">
-                            <div class="metric">
-                                <div>Total Schools</div>
-                                <div class="metric-value">{summary_stats['Total Schools']}</div>
-                            </div>
-                            <div class="metric">
-                                <div>Immediate Capital Needs</div>
-                                <div class="metric-value">{summary_stats['Total Immediate Capital Needs']}</div>
-                            </div>
-                            <div class="metric">
-                                <div>Total Capital Needs</div>
-                                <div class="metric-value">{summary_stats['Total Capital Needs']}</div>
-                            </div>
-                        </div>
-                        
-                        {capital_df.to_html(index=False, escape=False, table_id="capital-table")}
-                        
+                        {html_content}
                         <div style="margin-top: 30px; font-size: 12px; color: #666;">
                             Report generated on {pd.Timestamp.now().strftime('%B %d, %Y at %I:%M %p')}
                         </div>
@@ -1010,14 +977,14 @@ def main():
                     # Create download button for HTML
                     st.sidebar.download_button(
                         label="⬇️ Download Capital Report (HTML)",
-                        data=html_report.encode('utf-8'),
+                        data=full_html.encode('utf-8'),
                         file_name=f"{filename_prefix}_capital_report.html",
                         mime="text/html",
                         help="Download as HTML file (can be printed to PDF from browser)"
                     )
                     
                     # Also provide CSV option
-                    csv_data = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']].to_csv(index=False)
+                    csv_data = capital_df_with_total.to_csv(index=False)
                     st.sidebar.download_button(
                         label="📊 Download Capital Data (CSV)",
                         data=csv_data,
@@ -1030,44 +997,77 @@ def main():
 
                 except Exception as e:
                     st.sidebar.error(f"❌ Error generating report: {str(e)}")
-                    # Fallback to CSV only
-                    try:
-                        csv_data = filtered_df[['School Name', 'Immediate Capital Needs', 'Total Capital Needs']].to_csv(index=False)
-                        st.sidebar.download_button(
-                            label="📊 Download Capital Data (CSV)",
-                            data=csv_data,
-                            file_name=f"{filename_prefix}_capital.csv",
-                            mime="text/csv"
-                        )
-                    except:
-                        st.sidebar.error("❌ All report generation failed.")
 
         if st.sidebar.button("📋 Generate Operations Report", help="Create formatted HTML report of operations data"):
             with st.spinner("Generating Operations Report..."):
                 try:
-                    # Create summary metrics
-                    summary_stats = {
-                        'Total Schools': len(filtered_df),
-                        'Total FY25 Budget': f"${filtered_df['Operational Budget FY25'].sum():,.0f}",
-                        'Total Positions': f"{filtered_df['Positions'].sum():.1f}",
-                        'Total SPED Positions': f"{filtered_df['SPED Positions'].sum():.1f}"
-                    }
+                    # Create operations dataframe with totals
+                    operations_df_with_total = filtered_df[['School Name', 'Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut',
+                                                           'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
+                                                           'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']].copy()
                     
-                    # Create formatted dataframe
-                    ops_df = filtered_df[['School Name', 'Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut', 
-                                         'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
-                                         'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']].copy()
+                    # Create district total row
+                    numeric_cols = ['Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut',
+                                   'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
+                                   'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']
                     
-                    # Format currency columns
-                    for col in ['Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut']:
-                        ops_df[col] = ops_df[col].apply(lambda x: f"${x:,.0f}")
+                    total_row = pd.DataFrame([[f"{district_name} Total"] + 
+                                            operations_df_with_total[numeric_cols].sum().tolist()])
+                    total_row.columns = operations_df_with_total.columns
+                    operations_df_with_total = pd.concat([operations_df_with_total, total_row], ignore_index=True)
                     
-                    # Format position columns
-                    for col in ['Positions', 'Positions 7% Cut', 'Positions 15% Cut', 'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']:
-                        ops_df[col] = ops_df[col].apply(lambda x: f"{x:.1f}")
+                    # Convert to polars for great_tables
+                    operations_df_pl = pl.from_pandas(operations_df_with_total)
                     
-                    # Create HTML report
-                    html_report = f"""
+                    # Define column groups for spanners
+                    budget_cols = ["Operational Budget FY25", "Operations 7% Cut", "Operations 15% Cut"]
+                    position_cols = ["Positions", "Positions 7% Cut", "Positions 15% Cut"]
+                    sped_cols = ["SPED Positions", "SPED Positions 7% Cut", "SPED Positions 15% Cut"]
+                    cuts_cols = ["Operations 7% Cut", "Operations 15% Cut", "Positions 7% Cut", "Positions 15% Cut", "SPED Positions 7% Cut", "SPED Positions 15% Cut"]
+                    
+                    # Create great_tables operations table
+                    operations_table = (
+                        GT(operations_df_pl)
+                        .tab_header(f"{district_name} - CPS School-Level Budget Cut Impacts")
+                        .tab_spanner(label="Operations Budget Impact", columns=budget_cols)
+                        .tab_spanner(label="Positions Impact", columns=position_cols)
+                        .tab_spanner(label="SPED Positions Impact", columns=sped_cols)
+                        .cols_label(
+                            **{
+                                "Operational Budget FY25": "FY25 Budget",
+                                "Operations 7% Cut": "7% Cuts",
+                                "Operations 15% Cut": "15% Cuts",
+                                "Positions 7% Cut": "7% Cuts",
+                                "Positions 15% Cut": "15% Cuts",
+                                "SPED Positions 7% Cut": "7% Cuts",
+                                "SPED Positions 15% Cut": "15% Cuts"
+                            }
+                        )
+                        .fmt_currency(
+                            columns=budget_cols,
+                            decimals=0,
+                        )
+                        .fmt_number(
+                            columns=position_cols + sped_cols,
+                            decimals=1,
+                        )
+                        .sub_missing(missing_text="")
+                        # Styling ----
+                        .tab_style(
+                            style=style.text(color="red"),
+                            locations=loc.body(columns=cuts_cols)
+                        )
+                        .tab_style(
+                            style=style.text(weight="bold"),
+                            locations=loc.body(rows=pl.col("School Name").str.contains("Total"))
+                        )
+                    )
+                    
+                    # Get HTML content from great_tables
+                    html_content = operations_table._repr_html_()
+                    
+                    # Create complete HTML document
+                    full_html = f"""
                     <!DOCTYPE html>
                     <html>
                     <head>
@@ -1075,57 +1075,14 @@ def main():
                         <title>Operations Report - {filename_prefix}</title>
                         <style>
                             body {{ 
+                                margin: 0; 
+                                padding: 20px; 
                                 font-family: Arial, sans-serif; 
-                                margin: 20px; 
                                 background-color: white;
                                 color: black;
                             }}
-                            .header {{ 
-                                text-align: center; 
-                                margin-bottom: 30px; 
-                                border-bottom: 2px solid #333;
-                                padding-bottom: 15px;
-                            }}
-                            .metrics {{ 
-                                display: flex; 
-                                justify-content: space-around; 
-                                margin-bottom: 30px;
-                                background-color: #f5f5f5;
-                                padding: 15px;
-                                border-radius: 5px;
-                            }}
-                            .metric {{ 
-                                text-align: center; 
-                            }}
-                            .metric-value {{ 
-                                font-size: 20px; 
-                                font-weight: bold; 
-                                color: #2E86AB;
-                            }}
                             table {{ 
-                                border-collapse: collapse; 
-                                width: 100%; 
-                                margin-top: 20px;
-                                font-size: 12px;
-                            }}
-                            th, td {{ 
-                                border: 1px solid #ddd; 
-                                padding: 8px; 
-                                text-align: center; 
-                            }}
-                            th {{ 
-                                background-color: #f2f2f2; 
-                                font-weight: bold;
-                            }}
-                            td:first-child {{ 
-                                text-align: left; 
-                            }}
-                            .cut-column {{ 
-                                color: red; 
-                                font-weight: bold; 
-                            }}
-                            tr:nth-child(even) {{ 
-                                background-color: #f9f9f9; 
+                                page-break-inside: avoid; 
                             }}
                             @media print {{
                                 body {{ margin: 0.5in; }}
@@ -1134,32 +1091,7 @@ def main():
                         </style>
                     </head>
                     <body>
-                        <div class="header">
-                            <h1>Operations & Budget Impact Report</h1>
-                            <h2>{district_name}</h2>
-                        </div>
-                        
-                        <div class="metrics">
-                            <div class="metric">
-                                <div>Total Schools</div>
-                                <div class="metric-value">{summary_stats['Total Schools']}</div>
-                            </div>
-                            <div class="metric">
-                                <div>Total FY25 Budget</div>
-                                <div class="metric-value">{summary_stats['Total FY25 Budget']}</div>
-                            </div>
-                            <div class="metric">
-                                <div>Total Positions</div>
-                                <div class="metric-value">{summary_stats['Total Positions']}</div>
-                            </div>
-                            <div class="metric">
-                                <div>SPED Positions</div>
-                                <div class="metric-value">{summary_stats['Total SPED Positions']}</div>
-                            </div>
-                        </div>
-                        
-                        {ops_df.to_html(index=False, escape=False, table_id="operations-table")}
-                        
+                        {html_content}
                         <div style="margin-top: 30px; font-size: 12px; color: #666;">
                             Report generated on {pd.Timestamp.now().strftime('%B %d, %Y at %I:%M %p')}
                         </div>
@@ -1170,14 +1102,14 @@ def main():
                     # Create download button for HTML
                     st.sidebar.download_button(
                         label="⬇️ Download Operations Report (HTML)",
-                        data=html_report.encode('utf-8'),
+                        data=full_html.encode('utf-8'),
                         file_name=f"{filename_prefix}_operations_report.html",
                         mime="text/html",
                         help="Download as HTML file (can be printed to PDF from browser)"
                     )
                     
                     # Also provide CSV option
-                    csv_data = ops_df.to_csv(index=False)
+                    csv_data = operations_df_with_total.to_csv(index=False)
                     st.sidebar.download_button(
                         label="📋 Download Operations Data (CSV)",
                         data=csv_data,
