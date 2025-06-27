@@ -240,6 +240,35 @@ def main():
         background-color: #f0f2f6 !important;
     }
     
+     /* FIX MOBILE SIDEBAR - Add these new rules */
+    .stSidebar {
+        background-color: #f0f2f6 !important;
+    }
+        
+    .stSidebar > div {
+        background-color: #f0f2f6 !important;
+    }
+    
+    /* Target mobile sidebar specifically */
+    .stSidebar .stMarkdown {
+        background-color: #f0f2f6 !important;
+        color: black !important;
+    }
+    
+    /* Fix mobile sidebar container */
+    section[data-testid="stSidebar"] {
+        background-color: #f0f2f6 !important;
+    }
+    
+    section[data-testid="stSidebar"] > div {
+        background-color: #f0f2f6 !important;
+    }
+    
+    /* Ensure sidebar content is also light */
+    .stSidebar .element-container {
+        background-color: #f0f2f6 !important;
+    }
+        
     /* Fix download buttons and other buttons */
     .stDownloadButton > button {
         background-color: white !important;
