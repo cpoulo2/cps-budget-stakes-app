@@ -1093,10 +1093,10 @@ def main():
                                     print-color-adjust: exact;
                                 }}
                                 table {{ 
-                                    width: 7.5in !important;
-                                    max-width: 7.5in !important;
+                                    width: 8.5in !important;
+                                    max-width: 8.5in !important;
                                     font-size: 10px; 
-                                    zoom: .9;
+                                    zoom: 1;
                                     table-layout: fixed;
                                     page-break-inside: auto;
                                 }}
