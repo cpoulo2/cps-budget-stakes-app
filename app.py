@@ -1564,9 +1564,9 @@ def main():
         totals_row['School Name'] = f"{district_name} Total"
         totals_row = pd.DataFrame(totals_row).T
         # Recaululate percentages for totals
-        totals_row['Position loss/gain (% of FY25 positions)'] = totals_row['Position loss/gain (budgeted)'] / totals_row['Total FY25']
-        totals_row['CTU layoffs (% of CTU positions)'] = totals_row['CTU layoffs (budgeted)'] / totals_row['Total CTU']
-        totals_row['SPED position loss/gain (% of FY25 SPED positions)'] = totals_row['SPED position loss/gain (budgeted)'] / totals_row['Total SPED']
+        totals_row['Position loss/gain (% of FY25 positions)'] = abs(totals_row['Position loss/gain (budgeted)'] / totals_row['Total FY25'])
+        totals_row['CTU layoffs (% of CTU positions)'] = abs(totals_row['CTU layoffs (budgeted)'] / totals_row['Total CTU'])
+        totals_row['SPED position loss/gain (% of FY25 SPED positions)'] = abs(totals_row['SPED position loss/gain (budgeted)'] / totals_row['Total SPED'])
         cuts_df_with_total = pd.concat([filtered_df, totals_row], ignore_index=True)
 
         # Remove unwanted columns from display
