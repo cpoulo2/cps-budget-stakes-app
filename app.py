@@ -893,45 +893,51 @@ def main():
     # Filter options
     filter_type = st.sidebar.radio(
         "Filter by:",
-        ["Chamber & District", "Legislator","Ward"]
+        ["Chamber & District", "Legislator Name","Ward", "Adler Name"]
     )
     
     if filter_type == "Chamber & District":
         # Chamber selection
         chambers = sorted(df['Chamber'].unique())
-        selected_chamber = st.sidebar.selectbox("Select Chamber:", chambers)
+        selected_chamber = st.sidebar.selectbox("Select ILGA Chamber:", chambers)
         
         # District selection (filtered by chamber)
         available_districts = sorted(df[df['Chamber'] == selected_chamber]['District'].unique())
-        selected_district = st.sidebar.selectbox("Select District:", available_districts)
+        selected_district = st.sidebar.selectbox("Select by District:", available_districts)
         
         # Filter data
         filtered_df = df[(df['Chamber'] == selected_chamber) & (df['District'] == selected_district)]
         
         # Display selection
-        st.subheader(f"📊 {selected_chamber} - District {selected_district}")
-        
-    elif filter_type == "Legislator":  # Filter by Legislator
+        st.subheader(f"📊 {filtered_df['Legislator'].values[0]} ({selected_chamber} District {selected_district})")
+
+    elif filter_type == "Legislator Name":  # Filter by Legislator
         # Legislator selection
         legislators = sorted(df['Legislator'].dropna().unique())
-        selected_legislator = st.sidebar.selectbox("Select Legislator:", legislators)
+        selected_legislator = st.sidebar.selectbox("Select by Legislator:", legislators)
         
         # Filter data
         filtered_df = df[df['Legislator'] == selected_legislator]
         
         # Display selection
         legislator_info = filtered_df.iloc[0]
-        st.subheader(f"📊 {selected_legislator} ({legislator_info['Chamber']} - District {legislator_info['District']})")
-    else:
-        # Ward selection
+        st.subheader(f"📊 {selected_legislator} ({legislator_info['Chamber']} District {legislator_info['District']})")
+    elif filter_type == "Ward":
         wards = sorted(df['Ward Number'].dropna().unique())
+#        alder = df[df['Ward Number'].isin(wards)]['alderman'].unique()
         selected_ward = st.sidebar.selectbox("Select Ward:", wards)
         
-        # Filter data
         filtered_df = df[df['Ward Number'] == selected_ward]
-
         # Display selection
-        st.subheader(f"📊 Ward {selected_ward}")
+        st.subheader(f"📊 {filtered_df['alderman'].values[0]} (Ward - {selected_ward})")
+    else:
+        adlers = sorted(df['alderman'].dropna().unique())
+        selected_adler = st.sidebar.selectbox("Select Adler by Name:", adlers)
+
+        filtered_df = df[df['alderman'] == selected_adler]
+        # Display selection
+        st.subheader(f"📊 {filtered_df['alderman'].values[0]} (Ward - {filtered_df['Ward Number'].values[0]})")
+
     # Define columns to display - only include baseline columns if they exist in filtered data
     base_display_columns = [
         'School Name',
@@ -978,15 +984,18 @@ def main():
         if filter_type == "Chamber & District":
             district_name = f"{selected_chamber} District {selected_district}"
             filename_prefix = f"{selected_chamber.replace(' ', '_')}_District_{selected_district}"
-        elif filter_type == "Legislator":
+        elif filter_type == "Legislator Name":
             # Get chamber and district info from filtered data
             legislator_info = filtered_df.iloc[0]
             district_name = f"{legislator_info['Chamber']} District {legislator_info['District']}"
             filename_prefix = f"{legislator_info['Chamber'].replace(' ', '_')}_District_{legislator_info['District']}"
-        else:
+        elif filter_type == "Ward":
             # Ward selection
             district_name = f"Ward {selected_ward}"
             filename_prefix = f"Ward_{selected_ward}"
+        else:  # Adler Name
+            district_name = f"Ward {filtered_df['Ward Number'].values[0]}"
+            filename_prefix = f"Ward_{filtered_df['Ward Number'].values[0]}"
 
         # CSV download of all data (NO COLUMNS - just direct sidebar)
         all_csv = all_data_df.to_csv(index=False)
@@ -1076,111 +1085,111 @@ def main():
                 except Exception as e:
                     st.sidebar.error(f"❌ Error generating report: {str(e)}")
 
-        if st.sidebar.button("📋 Generate Operations Report", help="Create formatted report of operations data"):
-            with st.spinner("Generating Operations Report..."):
-                try:
-                    # Create operations dataframe with totals
-                    operations_df_with_total = filtered_df[['School Name', 'Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut',
-                                                           'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
-                                                           'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']].copy()
+        # if st.sidebar.button("📋 Generate Operations Report", help="Create formatted report of operations data"):
+        #     with st.spinner("Generating Operations Report..."):
+        #         try:
+        #             # Create operations dataframe with totals
+        #             operations_df_with_total = filtered_df[['School Name', 'Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut',
+        #                                                    'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
+        #                                                    'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']].copy()
                     
-                    # Create district total row
-                    numeric_cols = ['Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut',
-                                   'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
-                                   'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']
+        #             # Create district total row
+        #             numeric_cols = ['Operational Budget FY25', 'Operations 7% Cut', 'Operations 15% Cut',
+        #                            'Positions', 'Positions 7% Cut', 'Positions 15% Cut',
+        #                            'SPED Positions', 'SPED Positions 7% Cut', 'SPED Positions 15% Cut']
                     
-                    total_row = pd.DataFrame([[f"{district_name} Total"] + 
-                                            operations_df_with_total[numeric_cols].sum().tolist()])
-                    total_row.columns = operations_df_with_total.columns
-                    operations_df_with_total = pd.concat([operations_df_with_total, total_row], ignore_index=True)
+        #             total_row = pd.DataFrame([[f"{district_name} Total"] + 
+        #                                     operations_df_with_total[numeric_cols].sum().tolist()])
+        #             total_row.columns = operations_df_with_total.columns
+        #             operations_df_with_total = pd.concat([operations_df_with_total, total_row], ignore_index=True)
                     
-                    # Convert to polars for great_tables
-                    operations_df_pl = pl.from_pandas(operations_df_with_total)
+        #             # Convert to polars for great_tables
+        #             operations_df_pl = pl.from_pandas(operations_df_with_total)
                     
-                    # Define column groups for spanners
-                    budget_cols = ["Operational Budget FY25", "Operations 7% Cut", "Operations 15% Cut"]
-                    position_cols = ["Positions", "Positions 7% Cut", "Positions 15% Cut"]
-                    sped_cols = ["SPED Positions", "SPED Positions 7% Cut", "SPED Positions 15% Cut"]
-                    cuts_cols = ["Operations 7% Cut", "Operations 15% Cut", "Positions 7% Cut", "Positions 15% Cut", "SPED Positions 7% Cut", "SPED Positions 15% Cut"]
+        #             # Define column groups for spanners
+        #             budget_cols = ["Operational Budget FY25", "Operations 7% Cut", "Operations 15% Cut"]
+        #             position_cols = ["Positions", "Positions 7% Cut", "Positions 15% Cut"]
+        #             sped_cols = ["SPED Positions", "SPED Positions 7% Cut", "SPED Positions 15% Cut"]
+        #             cuts_cols = ["Operations 7% Cut", "Operations 15% Cut", "Positions 7% Cut", "Positions 15% Cut", "SPED Positions 7% Cut", "SPED Positions 15% Cut"]
                     
-                    # Create great_tables operations table
-                    operations_table = (
-                        GT(operations_df_pl)
-                        .tab_header(f"{district_name} - CPS School-Level Budget Cut Impacts")
-                        .tab_spanner(label="Operations Budget Impact", columns=budget_cols)
-                        .tab_spanner(label="Positions Impact", columns=position_cols)
-                        .tab_spanner(label="SPED Positions Impact", columns=sped_cols)
-                        .cols_label(
-                            **{
-                                "Operational Budget FY25": "FY25 Budget",
-                                "Operations 7% Cut": "7% Cuts",
-                                "Operations 15% Cut": "15% Cuts",
-                                "Positions 7% Cut": "7% Cuts",
-                                "Positions 15% Cut": "15% Cuts",
-                                "SPED Positions 7% Cut": "7% Cuts",
-                                "SPED Positions 15% Cut": "15% Cuts"
-                            }
-                        )
-                        .fmt_currency(
-                            columns=budget_cols,
-                            decimals=0,
-                        )
-                        .fmt_number(
-                            columns=position_cols + sped_cols,
-                            decimals=1,
-                        )
-                        .sub_missing(missing_text="")
-                        # Styling ----
-                        .tab_style(
-                            style=style.text(color="red"),
-                            locations=loc.body(columns=cuts_cols)
-                        )
-                        .tab_style(
-                            style=style.text(weight="bold"),
-                            locations=loc.body(rows=pl.col("School Name").str.contains("Total"))
-                        )
-                    )
+        #             # Create great_tables operations table
+        #             operations_table = (
+        #                 GT(operations_df_pl)
+        #                 .tab_header(f"{district_name} - CPS School-Level Budget Cut Impacts")
+        #                 .tab_spanner(label="Operations Budget Impact", columns=budget_cols)
+        #                 .tab_spanner(label="Positions Impact", columns=position_cols)
+        #                 .tab_spanner(label="SPED Positions Impact", columns=sped_cols)
+        #                 .cols_label(
+        #                     **{
+        #                         "Operational Budget FY25": "FY25 Budget",
+        #                         "Operations 7% Cut": "7% Cuts",
+        #                         "Operations 15% Cut": "15% Cuts",
+        #                         "Positions 7% Cut": "7% Cuts",
+        #                         "Positions 15% Cut": "15% Cuts",
+        #                         "SPED Positions 7% Cut": "7% Cuts",
+        #                         "SPED Positions 15% Cut": "15% Cuts"
+        #                     }
+        #                 )
+        #                 .fmt_currency(
+        #                     columns=budget_cols,
+        #                     decimals=0,
+        #                 )
+        #                 .fmt_number(
+        #                     columns=position_cols + sped_cols,
+        #                     decimals=1,
+        #                 )
+        #                 .sub_missing(missing_text="")
+        #                 # Styling ----
+        #                 .tab_style(
+        #                     style=style.text(color="red"),
+        #                     locations=loc.body(columns=cuts_cols)
+        #                 )
+        #                 .tab_style(
+        #                     style=style.text(weight="bold"),
+        #                     locations=loc.body(rows=pl.col("School Name").str.contains("Total"))
+        #                 )
+        #             )
                     
-                    # Get HTML content from great_tables
-                    html_content = operations_table._repr_html_()
+        #             # Get HTML content from great_tables
+        #             html_content = operations_table._repr_html_()
                     
-                    # Create complete HTML document
+        #             # Create complete HTML document
 
-                    full_html = f"""
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="utf-8">
-                        <style>
-                            body {{ margin: 0; padding: 20px; font-family: Arial, sans-serif; }}
-                            table {{ page-break-inside: avoid; }}
-                        </style>
-                    </head>
-                    <body>
-                        {html_content}
-                        <div style="margin-top: 30px; font-size: 12px; color: #666;">
-                            Report generated on {pd.Timestamp.now().strftime('%B %d, %Y at %I:%M %p')}
-                        </div>
-                    </body>
-                    </html>
-                    """
+        #             full_html = f"""
+        #             <!DOCTYPE html>
+        #             <html>
+        #             <head>
+        #                 <meta charset="utf-8">
+        #                 <style>
+        #                     body {{ margin: 0; padding: 20px; font-family: Arial, sans-serif; }}
+        #                     table {{ page-break-inside: avoid; }}
+        #                 </style>
+        #             </head>
+        #             <body>
+        #                 {html_content}
+        #                 <div style="margin-top: 30px; font-size: 12px; color: #666;">
+        #                     Report generated on {pd.Timestamp.now().strftime('%B %d, %Y at %I:%M %p')}
+        #                 </div>
+        #             </body>
+        #             </html>
+        #             """
                     
-                    # Create download button for HTML
-                    st.sidebar.download_button(
-                        label="⬇️ Download Operations Report",
-                        data=full_html.encode('utf-8'),
-                        file_name=f"{filename_prefix}_operations_report.html",
-                        mime="text/html"
-                    )
+        #             # Create download button for HTML
+        #             st.sidebar.download_button(
+        #                 label="⬇️ Download Operations Report",
+        #                 data=full_html.encode('utf-8'),
+        #                 file_name=f"{filename_prefix}_operations_report.html",
+        #                 mime="text/html"
+        #             )
                 
                     
-                    st.sidebar.success("✅ Operations report generated successfully!")
-                    st.sidebar.info("💡 Tip: This will open in your browser. You can print from there.")
+        #             st.sidebar.success("✅ Operations report generated successfully!")
+        #             st.sidebar.info("💡 Tip: This will open in your browser. You can print from there.")
 
-                except Exception as e:
-                    st.sidebar.error(f"❌ Error generating report: {str(e)}")
+        #         except Exception as e:
+        #             st.sidebar.error(f"❌ Error generating report: {str(e)}")
         
-        if st.sidebar.button("📋 Generate Budget Cuts Report", help="Create formatted report of budgeted cuts data"):
+        if st.sidebar.button("📋 Generate Budget Cuts Report", help="Create formatted report of CPS proposed FY26 budget data and cuts"):
             with st.spinner("Generating Cuts Report..."):
                 try:
                     # Create cuts dataframe with totals (need to include baseline columns)
@@ -1297,7 +1306,8 @@ def main():
                     st.sidebar.error(f"❌ Error generating report: {str(e)}")
     
     # Create tabs for data display
-    tab1, tab2, tab3 = st.tabs(["💰 Capital Needs ", " 🏢 Operations & Positions ", " ✂️ Cuts "])
+    # tab1, tab2, tab3 = st.tabs(["💰 Capital Needs ", " 🏢 Operations & Positions ", " ✂️ Cuts "])
+    tab1, tab3 = st.tabs(["💰 Capital Needs ", " ✂️ Cuts "])
 
     # Format currency and numbers functions
     def format_currency(val):
@@ -1422,147 +1432,147 @@ def main():
         else:
             st.warning("No schools found for the selected criteria.")
     
-    with tab2:
-        st.subheader("Operations & Positions by School")
+    # with tab2:
+    #     st.subheader("Operations & Positions by School")
         
-        # Define operations columns
-        operations_columns = [
-            'School Name',
-            'Operational Budget FY25',
-            'Operations 7% Cut',
-            'Operations 15% Cut',
-            'Positions',
-            'Positions 7% Cut',
-            'Positions 15% Cut',
-            'SPED Positions',
-            'SPED Positions 7% Cut',
-            'SPED Positions 15% Cut'
-        ]
+    #     # Define operations columns
+    #     operations_columns = [
+    #         'School Name',
+    #         'Operational Budget FY25',
+    #         'Operations 7% Cut',
+    #         'Operations 15% Cut',
+    #         'Positions',
+    #         'Positions 7% Cut',
+    #         'Positions 15% Cut',
+    #         'SPED Positions',
+    #         'SPED Positions 7% Cut',
+    #         'SPED Positions 15% Cut'
+    #     ]
         
-        # Create operations display dataframe
-        operations_df = filtered_df[operations_columns].copy()
+    #     # Create operations display dataframe
+    #     operations_df = filtered_df[operations_columns].copy()
         
-        # Rename columns for display
-        operations_df.columns = [
-            "School Name",
-            "FY25 Budget",
-            "Budget Cut (7%)",
-            "Budget Cut (15%)",
-            "Total Positions",
-            "Position Loss (7%)",
-            "Position Loss (15%)",
-            "SPED Positions",
-            "SPED Loss (7%)",
-            "SPED Loss (15%)"
-        ]
+    #     # Rename columns for display
+    #     operations_df.columns = [
+    #         "School Name",
+    #         "FY25 Budget",
+    #         "Budget Cut (7%)",
+    #         "Budget Cut (15%)",
+    #         "Total Positions",
+    #         "Position Loss (7%)",
+    #         "Position Loss (15%)",
+    #         "SPED Positions",
+    #         "SPED Loss (7%)",
+    #         "SPED Loss (15%)"
+    #     ]
         
-        # Calculate totals for operations
-        operations_numeric_columns = [col for col in operations_df.columns if col != 'School Name']
-        operations_totals = {}
-        operations_totals['School Name'] = 'TOTAL'
+    #     # Calculate totals for operations
+    #     operations_numeric_columns = [col for col in operations_df.columns if col != 'School Name']
+    #     operations_totals = {}
+    #     operations_totals['School Name'] = 'TOTAL'
         
-        for col in operations_numeric_columns:
-            operations_totals[col] = operations_df[col].sum()
+    #     for col in operations_numeric_columns:
+    #         operations_totals[col] = operations_df[col].sum()
         
-        # Add totals row
-        operations_totals_df = pd.DataFrame([operations_totals])
-        operations_final_df = pd.concat([operations_df, operations_totals_df], ignore_index=True)
+    #     # Add totals row
+    #     operations_totals_df = pd.DataFrame([operations_totals])
+    #     operations_final_df = pd.concat([operations_df, operations_totals_df], ignore_index=True)
         
-        # Format currency and positions
-        currency_cols = ['FY25 Budget', 'Budget Cut (7%)', 'Budget Cut (15%)']
-        position_cols = ['Total Positions', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Positions', 'SPED Loss (7%)', 'SPED Loss (15%)']
+    #     # Format currency and positions
+    #     currency_cols = ['FY25 Budget', 'Budget Cut (7%)', 'Budget Cut (15%)']
+    #     position_cols = ['Total Positions', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Positions', 'SPED Loss (7%)', 'SPED Loss (15%)']
         
-        formatted_operations_df = operations_final_df.copy()
-        for col in currency_cols:
-            formatted_operations_df[col] = formatted_operations_df[col].apply(format_currency)
-        for col in position_cols:
-            formatted_operations_df[col] = formatted_operations_df[col].apply(format_positions)
+    #     formatted_operations_df = operations_final_df.copy()
+    #     for col in currency_cols:
+    #         formatted_operations_df[col] = formatted_operations_df[col].apply(format_currency)
+    #     for col in position_cols:
+    #         formatted_operations_df[col] = formatted_operations_df[col].apply(format_positions)
         
-        # Display operations metrics
-        if len(filtered_df) > 0:
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("Schools", len(filtered_df))
-            with col2:
-                st.metric("Total possible budget cuts", format_currency(operations_totals['Budget Cut (15%)']))
-            with col3:
-                st.metric("Loss of positions", format_positions(operations_totals['Position Loss (15%)']))
-            with col4:
-                st.metric("Loss of SPED positions", format_positions(operations_totals['SPED Loss (15%)']))
+    #     # Display operations metrics
+    #     if len(filtered_df) > 0:
+    #         col1, col2, col3, col4 = st.columns(4)
+    #         with col1:
+    #             st.metric("Schools", len(filtered_df))
+    #         with col2:
+    #             st.metric("Total possible budget cuts", format_currency(operations_totals['Budget Cut (15%)']))
+    #         with col3:
+    #             st.metric("Loss of positions", format_positions(operations_totals['Position Loss (15%)']))
+    #         with col4:
+    #             st.metric("Loss of SPED positions", format_positions(operations_totals['SPED Loss (15%)']))
         
-        if len(filtered_df) > 0:
-            # Create custom HTML table for full control over styling
-            def create_html_table(df):
-                cut_columns = ['Budget Cut (7%)', 'Budget Cut (15%)', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Loss (7%)', 'SPED Loss (15%)']
+    #     if len(filtered_df) > 0:
+    #         # Create custom HTML table for full control over styling
+    #         def create_html_table(df):
+    #             cut_columns = ['Budget Cut (7%)', 'Budget Cut (15%)', 'Position Loss (7%)', 'Position Loss (15%)', 'SPED Loss (7%)', 'SPED Loss (15%)']
                 
-                html = """
-                <style>
-                .custom-table {
-                    border-collapse: collapse;
-                    width: 100%;
-                    font-family: 'Source Sans Pro', sans-serif;
-                    font-size: 14px;
-                    margin: 0 !important;
-                }
-                .custom-table thead {
-                    position: sticky;
-                    top: 0;
-                    z-index: 10;
-                    background-color: white;
-                }
-                .custom-table th {
-                    background-color: white !important;
-                    font-weight: bold !important;
-                    text-align: center !important;
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                    color: black !important;
-                    position: sticky;
-                    top: 0;
-                }
-                .custom-table td {
-                    padding: 8px 10px;
-                    border: 1px solid #ddd;
-                    text-align: center;
-                }
-                .custom-table td:first-child {
-                    text-align: left;
-                }
-                .custom-table tr:last-child {
-                    background-color: #f0f0f0;
-                    font-weight: bold;
-                }
-                .cut-column {
-                    color: red !important;
-                    font-weight: bold;
-                }
-                </style>
-                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; width: 100%;">
-                <table class="custom-table">
-                <thead><tr>
-                """
+    #             html = """
+    #             <style>
+    #             .custom-table {
+    #                 border-collapse: collapse;
+    #                 width: 100%;
+    #                 font-family: 'Source Sans Pro', sans-serif;
+    #                 font-size: 14px;
+    #                 margin: 0 !important;
+    #             }
+    #             .custom-table thead {
+    #                 position: sticky;
+    #                 top: 0;
+    #                 z-index: 10;
+    #                 background-color: white;
+    #             }
+    #             .custom-table th {
+    #                 background-color: white !important;
+    #                 font-weight: bold !important;
+    #                 text-align: center !important;
+    #                 padding: 10px;
+    #                 border: 1px solid #ddd;
+    #                 color: black !important;
+    #                 position: sticky;
+    #                 top: 0;
+    #             }
+    #             .custom-table td {
+    #                 padding: 8px 10px;
+    #                 border: 1px solid #ddd;
+    #                 text-align: center;
+    #             }
+    #             .custom-table td:first-child {
+    #                 text-align: left;
+    #             }
+    #             .custom-table tr:last-child {
+    #                 background-color: #f0f0f0;
+    #                 font-weight: bold;
+    #             }
+    #             .cut-column {
+    #                 color: red !important;
+    #                 font-weight: bold;
+    #             }
+    #             </style>
+    #             <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; width: 100%;">
+    #             <table class="custom-table">
+    #             <thead><tr>
+    #             """
                 
-                # Add headers
-                for col in df.columns:
-                    html += f"<th>{col}</th>"
-                html += "</tr></thead><tbody>"
+    #             # Add headers
+    #             for col in df.columns:
+    #                 html += f"<th>{col}</th>"
+    #             html += "</tr></thead><tbody>"
                 
-                # Add data rows
-                for idx, row in df.iterrows():
-                    html += "<tr>"
-                    for col in df.columns:
-                        value = row[col]
-                        css_class = "cut-column" if col in cut_columns else ""
-                        html += f'<td class="{css_class}">{value}</td>'
-                    html += "</tr>"
+    #             # Add data rows
+    #             for idx, row in df.iterrows():
+    #                 html += "<tr>"
+    #                 for col in df.columns:
+    #                     value = row[col]
+    #                     css_class = "cut-column" if col in cut_columns else ""
+    #                     html += f'<td class="{css_class}">{value}</td>'
+    #                 html += "</tr>"
                 
-                html += "</tbody></table></div>"
-                return html
+    #             html += "</tbody></table></div>"
+    #             return html
             
-            # Display custom HTML table
-            st.markdown(create_html_table(formatted_operations_df), unsafe_allow_html=True)       
-        else:
-            st.warning("No schools found for the selected criteria.")
+    #         # Display custom HTML table
+    #         st.markdown(create_html_table(formatted_operations_df), unsafe_allow_html=True)       
+    #     else:
+    #         st.warning("No schools found for the selected criteria.")
     with tab3:
         st.subheader("Budgeted Cuts by School")
         # Define cuts columns        
