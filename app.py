@@ -125,20 +125,20 @@ def create_formatted_tables(df_filtered, district_name):
     if 'Total FY25' in df_cuts.columns and 'Position loss/gain (budgeted)' in df_cuts.columns:
         total_fy25 = df_cuts.loc[total_idx, 'Total FY25']
         position_change = df_cuts.loc[total_idx, 'Position loss/gain (budgeted)']
-        df_cuts.loc[total_idx, 'Position loss/gain (% of FY25 positions)'] = position_change / total_fy25 if total_fy25 != 0 else 0
+        df_cuts.loc[total_idx, 'Position loss/gain (% of FY25 positions)'] = abs(position_change) / total_fy25 if total_fy25 != 0 else 0
     
     # CTU layoffs percentage = CTU layoffs (budgeted) / Total CTU
     if 'Total CTU' in df_cuts.columns and 'CTU layoffs (budgeted)' in df_cuts.columns:
         total_ctu = df_cuts.loc[total_idx, 'Total CTU']
         ctu_change = df_cuts.loc[total_idx, 'CTU layoffs (budgeted)']
-        df_cuts.loc[total_idx, 'CTU layoffs (% of CTU positions)'] = ctu_change / total_ctu if total_ctu != 0 else 0
+        df_cuts.loc[total_idx, 'CTU layoffs (% of CTU positions)'] = abs(ctu_change) / total_ctu if total_ctu != 0 else 0
     
     # SPED position loss/gain percentage = SPED position loss/gain (budgeted) / Total SPED
     if 'Total SPED' in df_cuts.columns and 'SPED position loss/gain (budgeted)' in df_cuts.columns:
         total_sped = df_cuts.loc[total_idx, 'Total SPED']
         sped_change = df_cuts.loc[total_idx, 'SPED position loss/gain (budgeted)']
-        df_cuts.loc[total_idx, 'SPED position loss/gain (% of FY25 SPED positions)'] = sped_change / total_sped if total_sped != 0 else 0
-    
+        df_cuts.loc[total_idx, 'SPED position loss/gain (% of FY25 SPED positions)'] = abs(sped_change) / total_sped if total_sped != 0 else 0
+
     # Remove unwanted columns from display
     columns_to_remove = ['Total FY25', 'Total CTU', 'Total SPED']
     df_cuts = df_cuts.drop(columns=[col for col in columns_to_remove if col in df_cuts.columns])
@@ -196,7 +196,6 @@ def create_formatted_tables(df_filtered, district_name):
         })
     )
     
-    # Create cuts table
     cuts_table = (
         GT(df_cuts_pl)
         .tab_header(f"{district_name} - CPS School Budgeted Cuts")
@@ -894,7 +893,7 @@ def main():
     # Filter options
     filter_type = st.sidebar.radio(
         "Filter by:",
-        ["Chamber & District", "Legislator"]
+        ["Chamber & District", "Legislator","Ward"]
     )
     
     if filter_type == "Chamber & District":
@@ -912,7 +911,7 @@ def main():
         # Display selection
         st.subheader(f"📊 {selected_chamber} - District {selected_district}")
         
-    else:  # Filter by Legislator
+    elif filter_type == "Legislator":  # Filter by Legislator
         # Legislator selection
         legislators = sorted(df['Legislator'].dropna().unique())
         selected_legislator = st.sidebar.selectbox("Select Legislator:", legislators)
@@ -923,7 +922,16 @@ def main():
         # Display selection
         legislator_info = filtered_df.iloc[0]
         st.subheader(f"📊 {selected_legislator} ({legislator_info['Chamber']} - District {legislator_info['District']})")
-    
+    else:
+        # Ward selection
+        wards = sorted(df['Ward Number'].dropna().unique())
+        selected_ward = st.sidebar.selectbox("Select Ward:", wards)
+        
+        # Filter data
+        filtered_df = df[df['Ward Number'] == selected_ward]
+
+        # Display selection
+        st.subheader(f"📊 Ward {selected_ward}")
     # Define columns to display - only include baseline columns if they exist in filtered data
     base_display_columns = [
         'School Name',
@@ -970,12 +978,16 @@ def main():
         if filter_type == "Chamber & District":
             district_name = f"{selected_chamber} District {selected_district}"
             filename_prefix = f"{selected_chamber.replace(' ', '_')}_District_{selected_district}"
-        else:
+        elif filter_type == "Legislator":
             # Get chamber and district info from filtered data
             legislator_info = filtered_df.iloc[0]
             district_name = f"{legislator_info['Chamber']} District {legislator_info['District']}"
             filename_prefix = f"{legislator_info['Chamber'].replace(' ', '_')}_District_{legislator_info['District']}"
-        
+        else:
+            # Ward selection
+            district_name = f"Ward {selected_ward}"
+            filename_prefix = f"Ward_{selected_ward}"
+
         # CSV download of all data (NO COLUMNS - just direct sidebar)
         all_csv = all_data_df.to_csv(index=False)
         st.sidebar.download_button(
@@ -1182,9 +1194,9 @@ def main():
                     totals_row['School Name'] = f"{district_name} Total"
                     totals_row = pd.DataFrame(totals_row).T
                     # Recaululate percentages for totals
-                    totals_row['Position loss/gain (% of FY25 positions)'] = totals_row['Position loss/gain (budgeted)'] / totals_row['Total FY25']
-                    totals_row['CTU layoffs (% of CTU positions)'] = totals_row['CTU layoffs (budgeted)'] / totals_row['Total CTU']
-                    totals_row['SPED position loss/gain (% of FY25 SPED positions)'] = totals_row['SPED position loss/gain (budgeted)'] / totals_row['Total SPED']
+                    totals_row['Position loss/gain (% of FY25 positions)'] = abs(totals_row['Position loss/gain (budgeted)']) / totals_row['Total FY25']
+                    totals_row['CTU layoffs (% of CTU positions)'] = abs(totals_row['CTU layoffs (budgeted)']) / totals_row['Total CTU']
+                    totals_row['SPED position loss/gain (% of FY25 SPED positions)'] = abs(totals_row['SPED position loss/gain (budgeted)']) / totals_row['Total SPED']
                     cuts_df_with_total = pd.concat([filtered_df, totals_row], ignore_index=True)
 
                     
