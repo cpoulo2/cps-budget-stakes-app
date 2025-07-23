@@ -907,6 +907,8 @@ def main():
         
         # Filter data
         filtered_df = df[(df['Chamber'] == selected_chamber) & (df['District'] == selected_district)]
+        # Drop duplicates of school id (this was an issue with wards -- adding it to others)
+        filtered_df = filtered_df.drop_duplicates(subset=['School ID'])
         
         # Display selection
         st.subheader(f"📊 {filtered_df['Legislator'].values[0]} ({selected_chamber} District {selected_district})")
@@ -918,6 +920,8 @@ def main():
         
         # Filter data
         filtered_df = df[df['Legislator'] == selected_legislator]
+        # Drop duplicates of school id (this was an issue with wards -- adding it to others)
+        filtered_df = filtered_df.drop_duplicates(subset=['School ID'])
         
         # Display selection
         legislator_info = filtered_df.iloc[0]
@@ -928,6 +932,8 @@ def main():
         selected_ward = st.sidebar.selectbox("Select Ward:", wards)
         
         filtered_df = df[df['Ward Number'] == selected_ward]
+        # Drop duplicates of school id (this was an issue with wards -- adding it to others)
+        filtered_df = filtered_df.drop_duplicates(subset=['School ID'])
         # Display selection
         st.subheader(f"📊 {filtered_df['alderman'].values[0]} (Ward - {selected_ward})")
     else:
@@ -935,6 +941,8 @@ def main():
         selected_adler = st.sidebar.selectbox("Select Adler by Name:", adlers)
 
         filtered_df = df[df['alderman'] == selected_adler]
+        # Drop duplicates of school id (this was an issue with wards -- adding it to others)
+        filtered_df = filtered_df.drop_duplicates(subset=['School ID'])
         # Display selection
         st.subheader(f"📊 {filtered_df['alderman'].values[0]} (Ward - {filtered_df['Ward Number'].values[0]})")
 
