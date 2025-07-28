@@ -3,3 +3,5 @@ pandas>=2.0.0
 numpy>=1.24.0
 polars>=0.20.0
 great-tables>=0.2.0
+pdfkit>=1.0.0
+

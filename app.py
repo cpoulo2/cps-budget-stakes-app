@@ -1,3 +1,4 @@
+import pdfkit
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -5,6 +6,7 @@ import numpy as np
 # Add new imports for formatted tables
 import polars as pl
 from great_tables import GT, loc, style
+
 
 
 # Replace the generate_pdf_from_html function with this improved version:
@@ -1298,6 +1300,7 @@ def main():
                     </body>
                     </html>
                     """
+
                     
                     # Create download button for HTML
                     st.sidebar.download_button(
