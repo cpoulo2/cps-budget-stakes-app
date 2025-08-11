@@ -198,14 +198,21 @@ def create_formatted_tables(df_filtered, district_name):
         })
     )
     
+    # REMOVING CTU layoffs from tables (8/11/25):
+
+    #     .fmt_number(columns=['Position loss/gain (budgeted)', 'CTU layoffs (budgeted)', 'SPED position loss/gain (budgeted)'], decimals=1)
+    #     .fmt_percent(columns=['Position loss/gain (% of FY25 positions)', 'CTU layoffs (% of CTU positions)', 'SPED position loss/gain (% of FY25 SPED positions)'], decimals=0)
+
     cuts_table = (
         GT(df_cuts_pl)
         .tab_header(f"{district_name} - CPS School Budgeted Cuts")
-        .fmt_number(columns=['Position loss/gain (budgeted)', 'CTU layoffs (budgeted)', 'SPED position loss/gain (budgeted)'], decimals=1)
-        .fmt_percent(columns=['Position loss/gain (% of FY25 positions)', 'CTU layoffs (% of CTU positions)', 'SPED position loss/gain (% of FY25 SPED positions)'], decimals=0)
+        .fmt_number(columns=['Position loss/gain (budgeted)', 'SPED position loss/gain (budgeted)'], decimals=1)
+        .fmt_percent(columns=['Position loss/gain (% of FY25 positions)', 'SPED position loss/gain (% of FY25 SPED positions)'], decimals=0)
         .sub_missing(missing_text="")
         .tab_style(style=style.text(weight="bold"), locations=loc.body(rows=pl.col("School Name").str.contains("TOTAL")))
         )
+    
+
     
     return operations_table, capital_table, cuts_table
 
@@ -948,7 +955,10 @@ def main():
         # Display selection
         st.subheader(f"📊 {filtered_df['alderman'].values[0]} (Ward - {filtered_df['Ward Number'].values[0]})")
 
+
+    # REMOVED CTU layoff (8/11/25)
     # Define columns to display - only include baseline columns if they exist in filtered data
+
     base_display_columns = [
         'School Name',
         'Immediate Capital Needs',
@@ -967,8 +977,8 @@ def main():
         "Total SPED",
         'Position loss/gain (budgeted)', 
         'Position loss/gain (% of FY25 positions)',
-        'CTU layoffs (budgeted)',
-        'CTU layoffs (% of CTU positions)',
+        # 'CTU layoffs (budgeted)',
+        # 'CTU layoffs (% of CTU positions)',
         'SPED position loss/gain (budgeted)', 
         'SPED position loss/gain (% of FY25 SPED positions)'
     ]
@@ -1202,10 +1212,14 @@ def main():
         if st.sidebar.button("📋 Generate Budget Cuts Report", help="Create formatted report of CPS proposed FY26 budget data and cuts"):
             with st.spinner("Generating Cuts Report..."):
                 try:
+                    # REMOVING CTU layoff (8/11/25)
+                    # available_columns = ['School Name', 'Total FY25', 'Position loss/gain (budgeted)', 'Position loss/gain (% of FY25 positions)', 
+                    #                    'Total CTU','CTU layoffs (budgeted)', 'CTU layoffs (% of CTU positions)', 
+                    #                    'Total SPED','SPED position loss/gain (budgeted)', 'SPED position loss/gain (% of FY25 SPED positions)']
+
                     # Create cuts dataframe with totals (need to include baseline columns)
                     # First check which columns are available
-                    available_columns = ['School Name', 'Total FY25', 'Position loss/gain (budgeted)', 'Position loss/gain (% of FY25 positions)', 
-                                       'Total CTU','CTU layoffs (budgeted)', 'CTU layoffs (% of CTU positions)', 
+                    available_columns = ['School Name', 'Total FY25', 'Position loss/gain (budgeted)', 'Position loss/gain (% of FY25 positions)',  
                                        'Total SPED','SPED position loss/gain (budgeted)', 'SPED position loss/gain (% of FY25 SPED positions)']
                     
                     # Create a totals row by summing all columns that aren't School Name
@@ -1213,8 +1227,12 @@ def main():
                     totals_row['School Name'] = f"{district_name} Total"
                     totals_row = pd.DataFrame(totals_row).T
                     # Recaululate percentages for totals
+
+                    # removing totals_row['CTU layoffs (% of CTU positions)'] = abs(totals_row['CTU layoffs (budgeted)']) / totals_row['Total CTU']
+
+
                     totals_row['Position loss/gain (% of FY25 positions)'] = abs(totals_row['Position loss/gain (budgeted)']) / totals_row['Total FY25']
-                    totals_row['CTU layoffs (% of CTU positions)'] = abs(totals_row['CTU layoffs (budgeted)']) / totals_row['Total CTU']
+                     
                     totals_row['SPED position loss/gain (% of FY25 SPED positions)'] = abs(totals_row['SPED position loss/gain (budgeted)']) / totals_row['Total SPED']
                     cuts_df_with_total = pd.concat([filtered_df, totals_row], ignore_index=True)
 
@@ -1224,8 +1242,8 @@ def main():
                         'School Name',
                         'Position loss/gain (budgeted)',
                         'Position loss/gain (% of FY25 positions)',
-                        'CTU layoffs (budgeted)',
-                        'CTU layoffs (% of CTU positions)',
+                        # 'CTU layoffs (budgeted)',
+                        # 'CTU layoffs (% of CTU positions)',
                         'SPED position loss/gain (budgeted)',
                         'SPED position loss/gain (% of FY25 SPED positions)'
                     ]]
@@ -1237,33 +1255,36 @@ def main():
                     
                     # Define column groups for spanners
                     position_cuts_cols = ["Position loss/gain (budgeted)", "Position loss/gain (% of FY25 positions)"]
-                    ctu_cuts_cols = ["CTU layoffs (budgeted)", "CTU layoffs (% of CTU positions)"]
+                    # removing ctu_cuts_cols = ["CTU layoffs (budgeted)", "CTU layoffs (% of CTU positions)"]
                     sped_cuts_cols = ["SPED position loss/gain (budgeted)", "SPED position loss/gain (% of FY25 SPED positions)"]
-                    all_cuts_cols = position_cuts_cols + ctu_cuts_cols + sped_cuts_cols
+                    # removing all_cuts_cols = position_cuts_cols + ctu_cuts_cols + sped_cuts_cols
+                    all_cuts_cols = position_cuts_cols + sped_cuts_cols 
                     
                     # Create great_tables cuts table
                     cuts_table = (
                         GT(cuts_df_pl)
                         .tab_header(f"{district_name} - CPS School Budgeted Position Cuts")
                         .tab_spanner(label="All Teachers and Paraprofessionals", columns=position_cuts_cols)
-                        .tab_spanner(label="CTU Positions", columns=ctu_cuts_cols)
+                        # removing .tab_spanner(label="CTU Positions", columns=ctu_cuts_cols)
                         .tab_spanner(label="SPED Positions", columns=sped_cuts_cols)
                         .cols_label(
                             **{
                                 "Position loss/gain (budgeted)": "Difference",
                                 "Position loss/gain (% of FY25 positions)": "% of FY25 Positions",
-                                "CTU layoffs (budgeted)": "Difference",
-                                "CTU layoffs (% of CTU positions)": "% of CTU Positions",
+                                # "CTU layoffs (budgeted)": "Difference",
+                                # "CTU layoffs (% of CTU positions)": "% of CTU Positions",
                                 "SPED position loss/gain (budgeted)": "Difference",
                                 "SPED position loss/gain (% of FY25 SPED positions)": "% of SPED Positions"
                             }
                         )
+                        # removed "CTU layoffs (budgeted)",
                         .fmt_number(
-                            columns=["Position loss/gain (budgeted)", "CTU layoffs (budgeted)", "SPED position loss/gain (budgeted)"],
+                            columns=["Position loss/gain (budgeted)", "SPED position loss/gain (budgeted)"],
                             decimals=0,
                         )
+                        # removed "CTU layoffs (% of CTU positions)"
                         .fmt_percent(
-                            columns=["Position loss/gain (% of FY25 positions)", "CTU layoffs (% of CTU positions)", "SPED position loss/gain (% of FY25 SPED positions)"],
+                            columns=["Position loss/gain (% of FY25 positions)", "SPED position loss/gain (% of FY25 SPED positions)"],
                             decimals=1,
                         )
                         .sub_missing(missing_text="")
@@ -1318,7 +1339,7 @@ def main():
     
     # Create tabs for data display
     # tab1, tab2, tab3 = st.tabs(["💰 Capital Needs ", " 🏢 Operations & Positions ", " ✂️ Cuts "])
-    tab1, tab3 = st.tabs(["💰 Capital Needs ", " ✂️ Cuts "])
+    tab1, tab3 = st.tabs([" ✂️ Cuts ","💰 Capital Needs "])
 
     # Format currency and numbers functions
     def format_currency(val):
@@ -1588,8 +1609,8 @@ def main():
         st.subheader("Budgeted Cuts by School")
         # Define cuts columns        
         
-        available_columns = ['School Name', 'Total FY25', 'Position loss/gain (budgeted)', 'Position loss/gain (% of FY25 positions)', 
-                                       'Total CTU','CTU layoffs (budgeted)', 'CTU layoffs (% of CTU positions)', 
+        # removing 'Total CTU','CTU layoffs (budgeted)', 'CTU layoffs (% of CTU positions)',
+        available_columns = ['School Name', 'Total FY25', 'Position loss/gain (budgeted)', 'Position loss/gain (% of FY25 positions)',  
                                        'Total SPED','SPED position loss/gain (budgeted)', 'SPED position loss/gain (% of FY25 SPED positions)']
                     
         # Create a totals row by summing all columns that aren't School Name
@@ -1598,7 +1619,7 @@ def main():
         totals_row = pd.DataFrame(totals_row).T
         # Recaululate percentages for totals
         totals_row['Position loss/gain (% of FY25 positions)'] = abs(totals_row['Position loss/gain (budgeted)'] / totals_row['Total FY25'])
-        totals_row['CTU layoffs (% of CTU positions)'] = abs(totals_row['CTU layoffs (budgeted)'] / totals_row['Total CTU'])
+        # removing totals_row['CTU layoffs (% of CTU positions)'] = abs(totals_row['CTU layoffs (budgeted)'] / totals_row['Total CTU'])
         totals_row['SPED position loss/gain (% of FY25 SPED positions)'] = abs(totals_row['SPED position loss/gain (budgeted)'] / totals_row['Total SPED'])
         cuts_df_with_total = pd.concat([filtered_df, totals_row], ignore_index=True)
 
@@ -1607,15 +1628,16 @@ def main():
             'School Name',
             'Position loss/gain (budgeted)',
             'Position loss/gain (% of FY25 positions)',
-            'CTU layoffs (budgeted)',
-            'CTU layoffs (% of CTU positions)',
+            # 'CTU layoffs (budgeted)',
+            # 'CTU layoffs (% of CTU positions)',
             'SPED position loss/gain (budgeted)',
             'SPED position loss/gain (% of FY25 SPED positions)'
         ]]
         
         # Format Position loss/gain (budgeted), CTU layoffs (budgeted), and SPED position loss/gain (budgeted) as integers. If missing than blank.
-        number_cols = ['Position loss/gain (budgeted)', 'CTU layoffs (budgeted)', 'SPED position loss/gain (budgeted)']
-        perc_cols = ['Position loss/gain (% of FY25 positions)', 'CTU layoffs (% of CTU positions)', 'SPED position loss/gain (% of FY25 SPED positions)']
+        # removing'CTU layoffs (budgeted)', 'CTU layoffs (% of CTU positions)', 
+        number_cols = ['Position loss/gain (budgeted)', 'SPED position loss/gain (budgeted)']
+        perc_cols = ['Position loss/gain (% of FY25 positions)','SPED position loss/gain (% of FY25 SPED positions)']
         
         formatted_cuts_df = cuts_df_with_total.copy()
         for col in perc_cols:
@@ -1643,7 +1665,8 @@ def main():
         if len(filtered_df) > 0:
             # Create a custom HTML table for cuts data similar to operations. Make positions number int and % as 0.00%
             def create_html_table_cuts(df):
-                cut2_columns = ['% of FY25 SPED Positions', '% of CTU Positions', '% of FY25 Positions']
+                # removed '% of CTU Positions', 
+                cut2_columns = ['% of FY25 SPED Positions', '% of FY25 Positions']
                 
                 html = """
                 <style>
