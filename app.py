@@ -212,8 +212,6 @@ def create_formatted_tables(df_filtered, district_name):
         .tab_style(style=style.text(weight="bold"), locations=loc.body(rows=pl.col("School Name").str.contains("TOTAL")))
         )
     
-
-    
     return operations_table, capital_table, cuts_table
 
 # Load data
